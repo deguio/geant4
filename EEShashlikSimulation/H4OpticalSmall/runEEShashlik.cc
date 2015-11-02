@@ -94,6 +94,7 @@ int main(int argc,char** argv)
   G4String session;
   G4double rotation = 0.;
   G4double zTras = 0.;
+  G4String jobid = "notbatched";
 #ifdef G4MULTITHREADED
   G4int nThreads = 0;
 #endif
@@ -102,6 +103,7 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-u" ) session = argv[i+1];
     else if ( G4String(argv[i]) == "-r" ) rotation = atof(argv[i+1]);
     else if ( G4String(argv[i]) == "-z" ) zTras = atof(argv[i+1]);
+    else if ( G4String(argv[i]) == "-b" ) jobid = argv[i+1];
 #ifdef G4MULTITHREADED
     else if ( G4String(argv[i]) == "-t" ) {
       nThreads = G4UIcommand::ConvertToInt(argv[i+1]);

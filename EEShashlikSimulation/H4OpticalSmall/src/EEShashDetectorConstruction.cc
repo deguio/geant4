@@ -147,9 +147,18 @@ void EEShashDetectorConstruction::DefineMaterials()
   boroslicate->AddElement(Si,fractionmass = 0.362);
   boroslicate->AddElement(B,fractionmass = 0.261);
   
+  
+  // Air with Nitrogen and Oxygen makes the beam miss the CeF3 quite often
   G4Material* pAir = new G4Material("Air" , density= 1.290*mg/cm3, ncomponents=2);
   pAir->AddElement(N, fractionmass=0.7);
   pAir->AddElement(O, fractionmass=0.3);
+
+  /*
+  // For testing purposes, use semi-vaccuum instead
+  G4Material* pAir = new G4Material("Air", z=1., a=1.01*g/mole,density= universe_mean_density,
+      kStateGas, 2.73*kelvin, 3.e-18*pascal);
+  */
+
 
   //optical grease
   G4Material* grease = new G4Material("Grease", density=1.0*g/cm3,3);
@@ -522,7 +531,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   // Shashlik:
   //fNofLayers = 10; //frascati
-  fNofLayers = 15; //h4
+  //fNofLayers = 15; //h4
+  fNofLayers = 1;
   G4double absThickness = 3.1*mm;
   G4double actThickness = 10.*mm;
   G4double calorSizeXY  = 24.*mm;
