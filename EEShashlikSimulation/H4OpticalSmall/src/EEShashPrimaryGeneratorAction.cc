@@ -124,11 +124,11 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //float y = rand_->Uniform( 0., 30.0 );
 
   // Original
-  //G4double xBeam = (G4UniformRand()-0.5) * (15.) *mm;
-  //G4double yBeam = (G4UniformRand()-0.5) * (15.) *mm;
+  G4double xBeam = (G4UniformRand()-0.5) * (15.) *mm;
+  G4double yBeam = (G4UniformRand()-0.5) * (15.) *mm;
   // Reduced smearing to keep runtime in check
-  G4double xBeam = (G4UniformRand()-0.5) * (1.) *mm;
-  G4double yBeam = (G4UniformRand()-0.5) * (1.) *mm;
+  //G4double xBeam = (G4UniformRand()-0.5) * (1.) *mm;
+  //G4double yBeam = (G4UniformRand()-0.5) * (1.) *mm;
 
   //  G4double xBeam = x*mm;
   // G4double yBeam = y*mm;
