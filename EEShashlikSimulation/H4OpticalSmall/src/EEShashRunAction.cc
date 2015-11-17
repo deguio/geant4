@@ -28,6 +28,10 @@
 /// \file EEShashRunAction.cc
 /// \brief Implementation of the EEShashRunAction class
 
+// For reading environment variables
+#include <iostream>
+#include <cstdlib>
+
 #include "EEShashRunAction.hh"
 #include "EEShashAnalysis.hh"
 
@@ -147,7 +151,42 @@ void EEShashRunAction::BeginOfRunAction(const G4Run* /*run*/)
 
   // Open an output file
   //
-  G4String fileName = "EEShash";
+
+    /* EXAMPLE
+    if(const char* env_p = std::getenv("PATH"))
+        std::cout << "Your PATH is: " << env_p << '\n';
+    */
+
+
+  /*
+  // Working, but use 'export VAR=thing' !!
+  std::cout << "\n\n===== LOOK HERE =====\n\nTrying to get an environment variable\n\n";
+
+  if (const char* JOBID = std::getenv("JOBID"))
+    std::cout << "This JOBID is:\n" << JOBID << "\n";
+  else std::cout << "Environment variable JOBID seems to be empty\n";
+
+  std::cout << "\n=====================\n";
+  */
+
+  // If this run is part of a job, store it in a separate ROOT file
+  G4String fileName;
+
+  /*
+  G4String JOBID = std::getenv("JOBID");
+  G4String JOBOUTDIR = std::getenv("JOBOUTDIR");
+  if (JOBID && JOBOUTDIR)
+    fileName = JOBOUTDIR + "out.root";
+  */
+
+  if ((std::getenv("JOBID")) && (std::getenv("JOBOUTDIR"))) {
+    G4String JOBID = std::getenv("JOBID");
+    G4String JOBOUTDIR = std::getenv("JOBOUTDIR");
+    fileName = JOBOUTDIR + "out.root";
+    }
+  // Else, just store as it as the default output file
+  else fileName = "EEShash";
+
   //  G4String fileName = "EEShash_cosmics";
   analysisManager->OpenFile(fileName);
 
