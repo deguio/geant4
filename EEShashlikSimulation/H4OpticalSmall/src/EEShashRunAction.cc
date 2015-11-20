@@ -181,13 +181,15 @@ void EEShashRunAction::BeginOfRunAction(const G4Run* /*run*/)
     fileName = JOBOUTDIR + "out.root";
   */
 
-  if ((std::getenv("JOBID")) && (std::getenv("JOBOUTDIR"))) {
-    G4String JOBID = std::getenv("JOBID");
-    G4String JOBOUTDIR = std::getenv("JOBOUTDIR");
+  if ((std::getenv("JOB_ID")) && (std::getenv("JOB_OUTDIR"))) {
+    G4String JOBID = std::getenv("JOB_ID");
+    G4String JOBOUTDIR = std::getenv("JOB_OUTDIR");
     fileName = JOBOUTDIR + "out.root";
     }
   // Else, just store as it as the default output file
   else fileName = "EEShash";
+
+  std::cout << "Using fileName: " << fileName << G4endl;
 
   //  G4String fileName = "EEShash_cosmics";
   analysisManager->OpenFile(fileName);
