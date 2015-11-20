@@ -4,6 +4,11 @@ if [ $HOSTNAME = "t3ui17" ]; then
     export G4LEVELGAMMADATA=/shome/tklijnsm/geant4/geant4.10.01.p02-install/share/Geant4-10.1.2/data/PhotonEvaporation3.1
     export G4EMLOW=/shome/tklijnsm/geant4/geant4.10.01.p02-install/share/Geant4-10.1.2/data/G4EMLOW6.40
     export G4REALSURFACEDATA=/shome/tklijnsm/geant4/geant4.10.01.p02-install/share/Geant4-10.1.2/data/RealSurface1.0
+
+    # TEST IF THIS IS ACTUALLY NEEDED - outdated cmake seems to work okay actually
+    #export PATH=/afs/psi.ch/sys/psi.x86_64_slp6/Programming/cmake/2.8.12.2/bin:$PATH
+    #which cmake /afs/psi.ch/sys/psi.x86_64_slp6/Programming/cmake/2.8.12.2/bin/cmake
+
     echo "Environment set up for PSI"
     echo "Remember to also set up CMSSW"
 else
