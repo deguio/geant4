@@ -40,17 +40,28 @@
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
 
-//#define nLayers 15
-//#define nBGOs 24
-#define nLayers 1
-#define nBGOs 0
-#define nFibers 4
+// This is too dangerous
+// #define nLayers 15
+// #define nBGOs 24
+// #define nLayers 1
+// #define nBGOs 24
+// #define nFibers 4
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 EEShashRunAction::EEShashRunAction( )
  : G4UserRunAction()
 { 
+
+  // Get geometry definitions from main
+  extern int nLayers;
+  extern int nBGOs;
+  extern int nFibres;
+  std::cout << "Printing from EEShashRunAction.cc :" << G4endl;
+  std::cout << "  Using nLayers = " << nLayers << G4endl;
+  std::cout << "  Using nBGOs   = " << nBGOs << G4endl;
+  std::cout << "  Using nFibres = " << nFibres << G4endl;
+
   // set printing event number per each event
   G4RunManager::GetRunManager()->SetPrintProgress(1);     
 
@@ -101,7 +112,7 @@ EEShashRunAction::EEShashRunAction( )
     analysisManager->CreateNtupleDColumn(Form("Ebgo_%d", i));
   }
   analysisManager->CreateNtupleIColumn("nFibers");
-  for( unsigned i=0; i<nFibers; ++i )
+  for( unsigned i=0; i<nFibres; ++i )
     analysisManager->CreateNtupleDColumn(Form("EFiber_%d", i));
 
   analysisManager->CreateNtupleDColumn("Fibre0");
@@ -153,39 +164,15 @@ void EEShashRunAction::BeginOfRunAction(const G4Run* /*run*/)
 
   // Open an output file
   //
-
-    /* EXAMPLE
-    if(const char* env_p = std::getenv("PATH"))
-        std::cout << "Your PATH is: " << env_p << '\n';
-    */
-
-
-  /*
-  // Working, but use 'export VAR=thing' !!
-  std::cout << "\n\n===== LOOK HERE =====\n\nTrying to get an environment variable\n\n";
-
-  if (const char* JOBID = std::getenv("JOBID"))
-    std::cout << "This JOBID is:\n" << JOBID << "\n";
-  else std::cout << "Environment variable JOBID seems to be empty\n";
-
-  std::cout << "\n=====================\n";
-  */
-
-  // If this run is part of a job, store it in a separate ROOT file
   G4String fileName;
 
-  /*
-  G4String JOBID = std::getenv("JOBID");
-  G4String JOBOUTDIR = std::getenv("JOBOUTDIR");
-  if (JOBID && JOBOUTDIR)
-    fileName = JOBOUTDIR + "out.root";
-  */
-
+  // If this run is part of a job, store it in a separate ROOT file
   if ((std::getenv("JOB_ID")) && (std::getenv("JOB_OUTDIR"))) {
     G4String JOBID = std::getenv("JOB_ID");
     G4String JOBOUTDIR = std::getenv("JOB_OUTDIR");
     fileName = JOBOUTDIR + "out.root";
     }
+
   // Else, just store as it as the default output file
   else fileName = "EEShash";
 
@@ -198,7 +185,7 @@ void EEShashRunAction::BeginOfRunAction(const G4Run* /*run*/)
   //hitsTree_->Branch( "EactLayer_", EactLayer_, "EactLayer[nLayers]/F" );
   //hitsTree_->Branch( "LYLayer_", LYLayer_, "LYLayer[nLayers]/F" );
 
-
+  std::cout << "EEShashRunAction::BeginOfRunAction() finished. Event creation starting." << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -50,6 +50,13 @@ EEShashActionInitialization::~EEShashActionInitialization()
 
 void EEShashActionInitialization::BuildForMaster() const
 {
+  extern int nLayers;
+  extern int nBGOs;
+  extern int nFibres;
+  std::cout << "Printing from EEShashActionInitialization.cc::BuildForMaster() :" << G4endl;
+  std::cout << "  Using nLayers = " << nLayers << G4endl;
+  std::cout << "  Using nBGOs   = " << nBGOs << G4endl;
+  std::cout << "  Using nFibres = " << nFibres << G4endl;
   SetUserAction(new EEShashRunAction);
 }
 
@@ -57,6 +64,14 @@ void EEShashActionInitialization::BuildForMaster() const
 
 void EEShashActionInitialization::Build() const
 {
+  extern int nLayers;
+  extern int nBGOs;
+  extern int nFibres;
+  std::cout << "Printing from EEShashActionInitialization.cc::Build() :" << G4endl;
+  std::cout << "  Using nLayers = " << nLayers << G4endl;
+  std::cout << "  Using nBGOs   = " << nBGOs << G4endl;
+  std::cout << "  Using nFibres = " << nFibres << G4endl;
+
   SetUserAction(new EEShashPrimaryGeneratorAction);
   SetUserAction(new EEShashRunAction);
   SetUserAction(new EEShashEventAction);

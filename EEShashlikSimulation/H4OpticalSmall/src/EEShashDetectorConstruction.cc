@@ -527,12 +527,22 @@ void EEShashDetectorConstruction::DefineMaterials()
 
 G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 {
+  extern int nLayers;
+  extern int nBGOs;
+  extern int nFibres;
+  std::cout << "Printing from EEShashDetectorConstruction::DefineVolumes() :" << G4endl;
+  std::cout << "  Using nLayers = " << nLayers << G4endl;
+  std::cout << "  Using nBGOs   = " << nBGOs << G4endl;
+  std::cout << "  Using nFibres = " << nFibres << G4endl;
+
   // Geometry parameters
 
   // Shashlik:
   //fNofLayers = 10; //frascati
   //fNofLayers = 15; //h4
-  fNofLayers = 1;
+  //fNofLayers = 1;
+  fNofLayers = nLayers; // Overwrite with value from main
+
   G4double absThickness = 3.1*mm;
   G4double actThickness = 10.*mm;
   G4double calorSizeXY  = 24.*mm;
@@ -553,7 +563,9 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4double tyvekLength = calorThickness;
 
   // BGO:
-  fNofBGOs = 24;
+  //fNofBGOs = 24;
+  fNofBGOs = nBGOs; // Overwrite with value from main
+
   //G4double bgoLength = 50.*mm;
   G4double bgoLength = 240.*mm;
   //G4double bgoSizeXY = 25.*mm;

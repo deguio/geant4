@@ -191,6 +191,7 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   
   // Fill histograms, ntuple
   //
+  std::cout << "Printing from EEShashEventAction::EndOfEventAction(): Filling branches" << std::endl;
 
   // get analysis manager
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
@@ -248,10 +249,15 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   analysisManager->FillNtupleDColumn(placeHolder++, fibre3  );
    
 
-   //    std::cout << "beam pos x = " << xBeamPos << std::endl;
+  std::cout << "xPosition = " << xBeamPos << std::endl;
   analysisManager->FillNtupleDColumn(placeHolder++, xBeamPos  );
-  //    std::cout << "beam pos y = " << yBeamPos << std::endl;
+  std::cout << "yPosition = " << yBeamPos << std::endl;
   analysisManager->FillNtupleDColumn(placeHolder++, yBeamPos  );
+
+  std::cout << "EOpt_0    = " << EOpt_0 << std::endl;
+  std::cout << "EOpt_1    = " << EOpt_1 << std::endl;
+  std::cout << "EOpt_2    = " << EOpt_2 << std::endl;
+  std::cout << "EOpt_3    = " << EOpt_3 << std::endl;
 
   analysisManager->FillNtupleDColumn(placeHolder++, EOpt_0  );
   analysisManager->FillNtupleDColumn(placeHolder++, EOpt_1  );

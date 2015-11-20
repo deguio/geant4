@@ -107,7 +107,7 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
       if(  thePrePVName.contains("Grease")&& copyNo==0 )	{
 	EOpt_0+=theTrack->GetTotalEnergy()/eV;
 	fibre0 += 1;
-			std::cout<<EOpt_0<<std::endl;
+      //std::cout << "EOpt_0 = " << EOpt_0 << std::endl;
 	//	  CreateTree::Instance()->tot_gap_phot_sci += 1;
 	// if you do not want to kill a photon once it exits the fiber, comment here below
 	//  theTrack->SetTrackStatus(fKillTrackAndSecondaries);

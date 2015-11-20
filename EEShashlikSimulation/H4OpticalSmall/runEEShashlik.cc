@@ -29,6 +29,11 @@
 /// \brief Main program of the EEShash example
 
 
+// Number of layers, BGOs and fibres
+// Better to set these here to prevent problems with ROOT branch creation and filling
+int nLayers = 1;
+int nBGOs = 24;
+int nFibres = 4;
 
 #include "EEShashDetectorConstruction.hh"
 #include "EEShashActionInitialization.hh"
@@ -137,21 +142,18 @@ int main(int argc,char** argv)
   //
 
 
-
-
+  // Initialize DetectorConstruction
   EEShashDetectorConstruction* detConstruction = new EEShashDetectorConstruction(rotation, zTras);
   runManager->SetUserInitialization(detConstruction);
 
-
- 
-
-
-
+  // Switch on relevant physics
   G4int switchOnScintillation = 1;
   G4int switchOnCerenkov = 0;
   //  G4int switchOnCerenkov = 1;
   G4int propagateScintillation = 1;
   G4int propagateCerenkov = 0;
+
+
   
 
   std::string physName("");
