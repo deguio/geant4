@@ -127,9 +127,41 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //G4double xBeam = (G4UniformRand()-0.5) * (15.) *mm;
   //G4double yBeam = (G4UniformRand()-0.5) * (15.) *mm;
 
-  // Turn off smearing to keep runtime in check
-  G4double xBeam = 0.0;
-  G4double yBeam = 0.0;
+
+  /* Output from DetectorConstruction:
+     Note this is unitless
+    fibreCopy = 0
+      xPos = -11.304
+      yPos = -11.304
+    fibreCopy = 1
+      xPos = -11.304
+      yPos = 11.304
+    fibreCopy = 2
+      xPos = 11.304
+      yPos = -11.304
+    fibreCopy = 3
+      xPos = 11.304
+      yPos = 11.304
+  */
+
+  // Unsmeared beam position:
+  //G4double xBeam = 0.0;
+  //G4double yBeam = 0.0;
+
+  // Position 0 <-- Confirmed correct, lower right corner viewed from front
+  G4double xBeam = -11.304;
+  G4double yBeam = -11.304;
+  // Position 1
+  //G4double xBeam = -11.304;
+  //G4double yBeam = 11.304;
+  // Position 2
+  //G4double xBeam = 11.304;
+  //G4double yBeam = -11.304;
+  // Position 3
+  //G4double xBeam = 11.304;
+  //G4double yBeam = 11.304;
+
+
 
   //  G4double xBeam = x*mm;
   // G4double yBeam = y*mm;

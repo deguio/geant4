@@ -996,6 +996,10 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
       G4double xPos = ix*(calorSizeXY/2.-0.696);
       G4double yPos = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2) + xPos*xPos);
 
+        G4cout << "    fibreCopy = " << fibreCopy << G4endl;
+        G4cout << "      xPos = " << xPos << G4endl;
+        G4cout << "      yPos = " << yPos << G4endl;
+
 
 //      G4VPhysicalVolume* FibrePV =  new G4PVPlacement(
 //						      rotation,                // no rotation
