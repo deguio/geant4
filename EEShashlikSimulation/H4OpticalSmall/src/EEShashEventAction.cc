@@ -122,12 +122,24 @@ void EEShashEventAction::PrintEventStatistics(
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void EEShashEventAction::BeginOfEventAction(const G4Event* /*event*/)
-{}
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void EEShashEventAction::EndOfEventAction(const G4Event* event)
 {  
+  // Use the geometry variables from main
+  extern int nLayers;
+  extern int nBGOs;
+  extern int nFibres;
+  /*
+  std::cout << "  Printing from EEShashEventAction.cc::EndOfEventAction() :" << G4endl;
+  std::cout << "    Using nLayers = " << nLayers << G4endl;
+  std::cout << "    Using nBGOs   = " << nBGOs << G4endl;
+  std::cout << "    Using nFibres = " << nFibres << G4endl;
+  */
+
   // Get hits collections IDs (only once)
   if ( fAbsHCID == -1 ) {
     fAbsHCID 
@@ -186,6 +198,10 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
       fibrHitCore->GetEdep(), fibrHitCore->GetTrackLength(),
       fibrHitClad->GetEdep(), fibrHitClad->GetTrackLength());
     G4cout << "------------------------------------" << G4endl;     
+
+    G4cout << "  Verifying that PrintEventStatistics changes units when it wants" << G4endl;
+    G4cout << "    fibrHitCore->GetEdep() = " << fibrHitCore->GetEdep() << G4endl;
+    G4cout << "    fibrHitClad->GetEdep() = " << fibrHitClad->GetEdep() << G4endl;
  
   }  
   
@@ -216,7 +232,9 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   //analysisManager->FillNtupleDColumn(3, actHit->GetTrackLength());
   placeHolder=5;  
 
-  int nLayers = actHC->entries()-1; // the last hit is the total energy
+  // nLayers should be defined only once in main
+  //int nLayers = actHC->entries()-1; // the last hit is the total energy
+
   analysisManager->FillNtupleIColumn(placeHolder, nLayers);
   placeHolder++;
   for( unsigned i=0; i<nLayers; ++i ) {
@@ -225,7 +243,9 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   }
   placeHolder=placeHolder+nLayers;
 
-  int nBGOs = bgoHC->entries()-1; // the last hit is the total energy
+  // nBGOs should be defined only once in main
+  //int nBGOs = bgoHC->entries()-1; // the last hit is the total energy
+
   analysisManager->FillNtupleIColumn(placeHolder, nBGOs);
   placeHolder++;
   for( unsigned i=0; i<nBGOs; ++i ) {
@@ -234,14 +254,16 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   }
   placeHolder=placeHolder+nBGOs;
 
-  int nfibrs = fibrHCCore->entries()-1; // the last hit is the total energy
-  analysisManager->FillNtupleIColumn(placeHolder, nfibrs);
+  // nFibres should be defined only once in main
+  //int nfibrs = fibrHCCore->entries()-1; // the last hit is the total energy
+
+  analysisManager->FillNtupleIColumn(placeHolder, nFibres);
   placeHolder++;
-  for( unsigned i=0; i<nfibrs; ++i ) {
+  for( unsigned i=0; i<nFibres; ++i ) {
     EEShashCalorHit* fibrHitCore_i = (*fibrHCCore)[i];
     analysisManager->FillNtupleDColumn(placeHolder+i, fibrHitCore_i->GetEdep());
   }
-  placeHolder=placeHolder+nfibrs;
+  placeHolder=placeHolder+nFibres;
   
   analysisManager->FillNtupleDColumn(placeHolder++, fibre0  );
   analysisManager->FillNtupleDColumn(placeHolder++, fibre1  );

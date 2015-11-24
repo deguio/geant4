@@ -105,6 +105,16 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
       //----------------------------
       // count photons at fiber exit
       if(  thePrePVName.contains("Grease")&& copyNo==0 )	{
+
+    /*
+    // Default way of returning is simply MeV's
+    cout << "Doing theTrack->GetTotalEnergy():" << G4endl;
+    cout << "    theTrack->GetTotalEnergy() = " << theTrack->GetTotalEnergy() << G4endl;
+    cout << "    theTrack->GetMomentum() = " << theTrack->GetMomentum() << G4endl;
+    cout << "    1 eV = " << eV << G4endl;
+    cout << "    Added to EOpt = " << theTrack->GetTotalEnergy()/eV << G4endl;
+    */
+
 	EOpt_0+=theTrack->GetTotalEnergy()/eV;
 	fibre0 += 1;
       //std::cout << "EOpt_0 = " << EOpt_0 << std::endl;

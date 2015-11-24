@@ -57,6 +57,7 @@ void EEShashActionInitialization::BuildForMaster() const
   std::cout << "  Using nLayers = " << nLayers << G4endl;
   std::cout << "  Using nBGOs   = " << nBGOs << G4endl;
   std::cout << "  Using nFibres = " << nFibres << G4endl;
+
   SetUserAction(new EEShashRunAction);
 }
 
