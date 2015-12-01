@@ -337,9 +337,9 @@ void EEShashDetectorConstruction::DefineMaterials()
   // mptPolystyrene->AddProperty("ABSLENGTH",photonEnergy_PS_abs,absPS,nEntries_PS_abs);
 
   // Approximation:
-  //mptPolystyrene->AddProperty("WLSABSLENGTH",photonEnergy_WLS_abs,WLS_abs,nEntries_WLS_abs);
+  mptPolystyrene->AddProperty("WLSABSLENGTH",photonEnergy_WLS_abs,WLS_abs,nEntries_WLS_abs);
   // From Kuraray:
-  mptPolystyrene->AddProperty("WLSABSLENGTH",photonEnergy_PS_abs,absPS,nEntries_PS_abs);
+  //mptPolystyrene->AddProperty("WLSABSLENGTH",photonEnergy_PS_abs,absPS,nEntries_PS_abs);
 
   mptPolystyrene->AddConstProperty("SCINTILLATIONYIELD",10./keV);//10/keV nominally
   //  mptPolystyrene->AddConstProperty("RESOLUTIONSCALE",1.0);

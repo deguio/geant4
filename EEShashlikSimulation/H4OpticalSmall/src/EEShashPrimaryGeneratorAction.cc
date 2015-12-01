@@ -124,8 +124,8 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //float y = rand_->Uniform( 0., 30.0 );
 
   // Original
-  //G4double xBeam = (G4UniformRand()-0.5) * (15.) *mm;
-  //G4double yBeam = (G4UniformRand()-0.5) * (15.) *mm;
+  G4double xBeam = (G4UniformRand()-0.5) * (15.) *mm;
+  G4double yBeam = (G4UniformRand()-0.5) * (15.) *mm;
 
 
   /* Output from DetectorConstruction:
@@ -145,8 +145,8 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   */
 
   // Unsmeared beam position (position center):
-  G4double xBeam = 0.0;
-  G4double yBeam = 0.0;
+  //G4double xBeam = 0.0;
+  //G4double yBeam = 0.0;
 
   // Position 0 <-- Confirmed correct, lower right corner viewed from front
   //G4double xBeam = -11.304;

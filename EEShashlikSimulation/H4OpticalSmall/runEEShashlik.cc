@@ -31,7 +31,7 @@
 
 // Number of layers, BGOs and fibres
 // Better to set these here to prevent problems with ROOT branch creation and filling
-int nLayers = 1;
+int nLayers = 15;
 int nBGOs = 24;
 int nFibres = 4;
 
