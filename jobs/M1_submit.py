@@ -21,7 +21,7 @@ import re
 
 def main():
 
-    n_jobs = 250
+    n_jobs = 1000
 
     # Get number of events per run
     with open( 'runJob.mac', 'r' ) as macfile:
@@ -33,8 +33,8 @@ def main():
     shutil.copyfile( 'runJob.mac', '/shome/tklijnsm/testbeam/geant4/EEShashlikSimulation/H4OpticalSmall/cmake/runJob.mac' )
 
     # Set the directories for stdout and for the out.root files
-    stddir = '/shome/tklijnsm/testbeam/jobs/stdout/'
-    outdir = '/shome/tklijnsm/testbeam/jobs/output/'
+    stddir = '/shome/tklijnsm/testbeam/geant4/jobs/stdout/'
+    outdir = '/shome/tklijnsm/testbeam/geant4/jobs/output/'
 
     # Submit jobs
     for i in range(n_jobs):

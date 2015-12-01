@@ -21,6 +21,6 @@ cd /shome/tklijnsm/testbeam/geant4/EEShashlikSimulation/H4OpticalSmall/cmake
 ./runEEShashlik -m runJob.mac
 
 # Copy out.root to shome
-export SHOME_OUTDIR=/shome/tklijnsm/testbeam/jobs/output/$JOB_NAME/
+export SHOME_OUTDIR=/shome/tklijnsm/testbeam/geant4/jobs/output/$JOB_NAME/
 mkdir -p $SHOME_OUTDIR
 cp $JOB_OUTDIR/out.root $SHOME_OUTDIR/out.root
