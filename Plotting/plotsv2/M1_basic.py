@@ -35,6 +35,7 @@ def main():
 
     parser = OptionParser()
     parser.add_option('-c', default=False, action='store_true', help='if given, copies the directory to lxplus:www/plots/')
+    parser.add_option('--sample', type='string', help='filename of the sample (takes a regex)')
     (options, args) = parser.parse_args()
 
     ########################################
@@ -47,7 +48,7 @@ def main():
     ROOT.gStyle.SetOptFit(1011)
     #ROOT.gStyle.SetOptStat(0)
 
-    c1 = ROOT.TCanvas("c1","c1",500,400)
+    c1 = ROOT.TCanvas("c1","c1",1000,800)
     c1.SetGrid()
 
 
@@ -60,7 +61,23 @@ def main():
     #sample_fn = '/e_50GeV_1L_0.5M/Combined.root'
     #sample_fn = '/e_50GeV_1L_5k/Combined.root'
     #sample_fn = '/e_50GeV_1L_50k_smeared/Combined.root'
-    sample_fn = '/e_50GeV_1L_50k_unsmeared/Combined.root'
+    #sample_fn = '/e_50GeV_1L_50k_unsmeared/Combined.root'
+    sample_fn = '/e_50GeV_1L_250k_unsmeared_fibre0/Combined.root'
+    #sample_fn = '/e_50GeV_1L_250k_unsmeared_fibre1/Combined.root'
+    #sample_fn = '/e_50GeV_1L_250k_unsmeared_fibre2/Combined.root'
+    #sample_fn = '/e_50GeV_1L_250k_unsmeared_fibre3/Combined.root'
+    #sample_fn = '/e_50GeV_1L_50k_unsmeared_center_wrongABSspec/Combined.root'
+    #sample_fn = '/e_50GeV_15L_INCOMPLETE_smeared_center/Combined.root'
+    #sample_fn = '/e_50GeV_15L_10k_smeared_center/Combined.root'
+
+    if options.sample != None:
+        all_dirs = os.listdir(sample_base)
+        for a_dir in all_dirs:
+            if re.search( options.sample, a_dir ):
+                sample_fn = a_dir + '/Combined.root'
+
+    print 'Using ' + sample_fn
+
 
     assert os.path.isfile( sample_base + sample_fn ), \
         '{0}{1} does not seem to be a file'.format(sample_base,sample_fn)
@@ -84,7 +101,10 @@ def main():
         'EfibrClad',
         'nLayers',
         'Eact_0',
+        #'Eact_1', # Only works for >1 layer runs
         'nBGOs',
+        'Ebgo_0',
+        'Ebgo_1',
         'nFibers',
         'EFiber_0',
         'EFiber_1',
@@ -139,7 +159,13 @@ def main():
         # Arbitrary histogram name, defined to be unique
         Hname = Get_Hname()
 
-        n_entries = input_tree.Draw( branch + '>>' + Hname , '' )
+        #n_entries = input_tree.Draw( branch + '>>' + Hname , '' )
+
+        if re.search( r'EOpt_[0-9]', branch ):
+            n_entries = input_tree.Draw( branch + '>>' + Hname + '(100,0.0,800.0)' , '' )
+        else:
+            n_entries = input_tree.Draw( branch + '>>' + Hname , '' )
+
 
         print '      Found {0} entries'.format(n_entries)
 
@@ -148,6 +174,9 @@ def main():
         hist.GetXaxis().SetTitle(x_label)
         hist.Draw()
         Print_c1( c1, plotdir + 'full_' + branch )
+
+        n_bins_used = hist.GetSize() - 2
+        print '      Using {0} bins'.format(n_bins_used)
 
         x_max = hist.GetXaxis().GetXmax()
         print '      Maximum bin at ' + str(x_max)
@@ -228,6 +257,10 @@ def main():
         # Arbitrary histogram name, defined to be unique
         Hname = Get_Hname()
 
+        if re.search( r'EOpt_[1-9]', branch ):
+            x_lim = 8.0 # Set manually to 8.0
+
+
         print '      Making zoomed non-zero histogram (reduce x-axis range to 15%)'
         n_entries = input_tree.Draw(
             # Draw string
@@ -278,6 +311,8 @@ def main():
 
         fh.write( '<hr />\n' )
         fh.write( '<br>\n' )
+
+    fh.close()
 
 
     ########################################
