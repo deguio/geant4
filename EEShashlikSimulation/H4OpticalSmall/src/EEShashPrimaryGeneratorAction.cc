@@ -151,13 +151,13 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // Position 0 <-- Confirmed correct, lower right corner viewed from front
   //G4double xBeam = -11.304;
   //G4double yBeam = -11.304;
-  // Position 1
-  //G4double xBeam = -11.304;
-  //G4double yBeam = 11.304;
-  // Position 2
+  // Position 1 <-- Confirmed correct, upper right corner viewed from front
+  G4double xBeam = -11.304;
+  G4double yBeam = 11.304;
+  // Position 2 <-- Confirmed correct, lower left corner viewed from front
   //G4double xBeam = 11.304;
   //G4double yBeam = -11.304;
-  // Position 3
+  // Position 3 <-- Confirmed correct, upper left corner viewed from front
   //G4double xBeam = 11.304;
   //G4double yBeam = 11.304;
 
