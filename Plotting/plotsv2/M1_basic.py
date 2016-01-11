@@ -62,13 +62,15 @@ def main():
     #sample_fn = '/e_50GeV_1L_5k/Combined.root'
     #sample_fn = '/e_50GeV_1L_50k_smeared/Combined.root'
     #sample_fn = '/e_50GeV_1L_50k_unsmeared/Combined.root'
-    sample_fn = '/e_50GeV_1L_250k_unsmeared_fibre0/Combined.root'
+    #sample_fn = '/e_50GeV_1L_250k_unsmeared_fibre0/Combined.root'
     #sample_fn = '/e_50GeV_1L_250k_unsmeared_fibre1/Combined.root'
     #sample_fn = '/e_50GeV_1L_250k_unsmeared_fibre2/Combined.root'
     #sample_fn = '/e_50GeV_1L_250k_unsmeared_fibre3/Combined.root'
     #sample_fn = '/e_50GeV_1L_50k_unsmeared_center_wrongABSspec/Combined.root'
     #sample_fn = '/e_50GeV_15L_INCOMPLETE_smeared_center/Combined.root'
     #sample_fn = '/e_50GeV_15L_10k_smeared_center/Combined.root'
+
+    sample_fn = '/pi_50GeV_1L_250k_unsmeared_fibre1/Combined.root'
 
     if options.sample != None:
         all_dirs = os.listdir(sample_base)

@@ -21,7 +21,7 @@ import re
 
 def main():
 
-    n_jobs = 1000
+    n_jobs = 500
 
     # Get number of events per run
     with open( 'runJob.mac', 'r' ) as macfile:
