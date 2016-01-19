@@ -19,6 +19,18 @@ import matplotlib.pyplot as plt
 
 def main():
 
+    # data_source: either 'Paper' or 'Website'
+    #
+    # 'Paper' refers to:
+    # "Analysis of Transmitted Optical Spectrum Enabling Accelerated
+    #  Testing of CPV Designs"
+    # by Miller e.a., 2009, Figure 2
+
+    # 'Website' refers to:
+    # http://kuraraypsf.jp/psf/sf.html
+    # Section "Transmission loss", middle figure
+    # This is *NOT* PMMA
+
     data_source = 'Paper'
     #data_source = 'Website'
 
