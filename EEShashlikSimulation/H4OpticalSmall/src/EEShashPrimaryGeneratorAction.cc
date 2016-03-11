@@ -55,6 +55,7 @@ G4double EOpt_2;
 G4double EOpt_3;
 
 
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 EEShashPrimaryGeneratorAction::EEShashPrimaryGeneratorAction()
@@ -145,15 +146,15 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   */
 
   // Unsmeared beam position (position center):
-  //G4double xBeam = 0.0;
-  //G4double yBeam = 0.0;
+  G4double xBeam = 0.0;
+  G4double yBeam = 0.0;
 
   // Position 0 <-- Confirmed correct, lower right corner viewed from front
   //G4double xBeam = -11.304;
   //G4double yBeam = -11.304;
   // Position 1 <-- Confirmed correct, upper right corner viewed from front
-  G4double xBeam = -11.304;
-  G4double yBeam = 11.304;
+  //  G4double xBeam = -11.304;
+  //  G4double yBeam = 11.304;
   // Position 2 <-- Confirmed correct, lower left corner viewed from front
   //G4double xBeam = 11.304;
   //G4double yBeam = -11.304;
@@ -180,7 +181,8 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   EOpt_1=0;
   EOpt_2=0;
   EOpt_3=0;
-  
+  for(int i=0;i<nPhotonsForTiming;++i)  time_vector.push_back(-1);
+
   // Set gun position
   fParticleGun->SetParticlePosition(G4ThreeVector(xBeam, yBeam, -1.587*m));
 

@@ -40,6 +40,8 @@
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
 
+#include "common.h"
+
 // This is too dangerous
 // #define nLayers 15
 // #define nBGOs 24
@@ -127,7 +129,14 @@ EEShashRunAction::EEShashRunAction( )
   analysisManager->CreateNtupleDColumn("EOpt_1");
   analysisManager->CreateNtupleDColumn("EOpt_2");
   analysisManager->CreateNtupleDColumn("EOpt_3");  
-  
+
+  std::cout<<"--------creating time for "<<nPhotonsForTiming<<std::endl;
+  for(unsigned i=0;i<nPhotonsForTiming;++i){//nPhotonsForTiming defined in common.h
+    analysisManager->CreateNtupleDColumn(Form("Time_deposit_%d",i));
+  }  
+
+  //  analysisManager->CreateNtupleXColumn("Time_deposit", std::vector<float> Time_deposit);
+
   analysisManager->FinishNtuple();
 
 

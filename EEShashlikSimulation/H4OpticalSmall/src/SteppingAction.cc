@@ -116,7 +116,13 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
     */
 
 	EOpt_0+=theTrack->GetTotalEnergy()/eV;
+	if(fibre0<nPhotonsForTiming){
+	  time_vector[fibre0]=theTrack->GetGlobalTime()/nanosecond;
+	  std::cout<<fibre0<<" "<<" "<<time_vector[fibre0]<<"<---"<< std::endl;
+	}
 	fibre0 += 1;
+
+
       //std::cout << "EOpt_0 = " << EOpt_0 << std::endl;
 	//	  CreateTree::Instance()->tot_gap_phot_sci += 1;
 	// if you do not want to kill a photon once it exits the fiber, comment here below

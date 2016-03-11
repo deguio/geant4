@@ -286,6 +286,11 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   analysisManager->FillNtupleDColumn(placeHolder++, EOpt_2  );
   analysisManager->FillNtupleDColumn(placeHolder++, EOpt_3  );
 
+  std::cout<<"filling time"<<std::endl;
+  for(unsigned i=0;i<nPhotonsForTiming;++i){
+    analysisManager->FillNtupleDColumn(placeHolder++,time_vector[i]);//FIXME put here what to fill
+  }
+
   analysisManager->AddNtupleRow();  
 
   
