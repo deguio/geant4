@@ -275,6 +275,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   analysisManager->FillNtupleDColumn(placeHolder++, fibre3  );
    
 
+
+
   std::cout << "xPosition = " << xBeamPos << std::endl;
   analysisManager->FillNtupleDColumn(placeHolder++, xBeamPos  );
   std::cout << "yPosition = " << yBeamPos << std::endl;
@@ -297,6 +299,34 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
 
   analysisManager->AddNtupleRow();  
 
+  //filling createTree
+  CreateTree::Instance() -> Eabs = absHit->GetEdep();
+  CreateTree::Instance() -> Eact = actHit->GetEdep();
+
+  CreateTree::Instance() -> EfibrCore =  fibrHitCore->GetEdep();
+  CreateTree::Instance() -> EfibrClad =  fibrHitClad->GetEdep();
+
+  CreateTree::Instance() -> nLayers = nLayers;
+
+  CreateTree::Instance() -> Fibre_0 = fibre0;
+  CreateTree::Instance() -> Fibre_1 = fibre1;
+  CreateTree::Instance() -> Fibre_2 = fibre2;
+  CreateTree::Instance() -> Fibre_3 = fibre3;
+
+  CreateTree::Instance() -> xPosition = xBeamPos;
+  CreateTree::Instance() -> yPosition = yBeamPos;
+
+  std::cout << "2nd time EOpt_0    = " << EOpt_0 << std::endl;
+
+  CreateTree::Instance() -> EOpt_0 = EOpt_0;
+  CreateTree::Instance() -> EOpt_1 = EOpt_1;
+  CreateTree::Instance() -> EOpt_2 = EOpt_2;
+  CreateTree::Instance() -> EOpt_3 = EOpt_3;
+
+  CreateTree::Instance() -> Event = event->GetEventID();
+
+
+ 
   CreateTree::Instance()->Fill();
 
   

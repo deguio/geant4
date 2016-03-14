@@ -42,6 +42,7 @@
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
 
+#include "CreateTree.h"
 
 G4double xBeamPos;
 G4double yBeamPos;
@@ -203,6 +204,7 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   xBeamPos = xBeam;
   yBeamPos = yBeam;
+
 }
 
 

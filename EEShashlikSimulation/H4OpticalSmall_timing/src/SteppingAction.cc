@@ -67,6 +67,7 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
   G4double global_y = thePrePosition.y()/mm;
   G4double global_z = thePrePosition.z()/mm;
 
+
   G4TransportationManager* transportMgr ; 
   transportMgr = G4TransportationManager::GetTransportationManager() ;
   G4PropagatorInField * fieldPropagator = transportMgr->GetPropagatorInField() ;
@@ -117,12 +118,10 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
     */
 
 	EOpt_0+=theTrack->GetTotalEnergy()/eV;
-	if(fibre0<nPhotonsForTiming){
-	  CreateTree::Instance() -> Time_deposit.push_back(theTrack->GetGlobalTime()/nanosecond);
-	  CreateTree::Instance() -> Event=100;
-	  time_vector[fibre0]=theTrack->GetGlobalTime()/nanosecond;
-	  std::cout<<fibre0<<" "<<" "<<time_vector[fibre0]<<"<---"<< std::endl;
-	}
+	CreateTree::Instance() -> Time_deposit.push_back(theTrack->GetGlobalTime()/nanosecond);
+	CreateTree::Instance() -> Process_deposit.push_back(1);
+	time_vector[fibre0]=theTrack->GetGlobalTime()/nanosecond;
+	std::cout<<fibre0<<" "<<" "<<time_vector[fibre0]<<"<---"<< std::endl;
 	fibre0 += 1;
 
 
