@@ -21,7 +21,7 @@ import re
 
 def main():
 
-    n_jobs = 500
+    n_jobs = 2
 
     # Get number of events per run
     with open( 'runJob.mac', 'r' ) as macfile:
@@ -30,7 +30,7 @@ def main():
 
 
     # Copy the per-job Geant4 macro to /cmake
-    shutil.copyfile( 'runJob.mac', '/shome/micheli/geant4/EEShashlikSimulation/H4OpticalSmall/cmake/runJob.mac' )
+    shutil.copyfile( 'runJob.mac', '/shome/micheli/geant4/EEShashlikSimulation/H4OpticalSmall_simpler/cmake/runJob.mac' )
 
     # Set the directories for stdout and for the out.root files
     stddir = '/shome/micheli/geant4/jobs/stdout/'
