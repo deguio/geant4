@@ -17,10 +17,10 @@ export G4REALSURFACEDATA=/shome/tklijnsm/geant4/geant4.10.01.p02-install/share/G
 export JOB_OUTDIR=$TMPDIR/
 
 # Attempt to run
-cd /shome/tklijnsm/testbeam/geant4/EEShashlikSimulation/H4OpticalSmall/cmake
+cd /shome/micheli/geant4/EEShashlikSimulation/H4OpticalSmall/cmake
 ./runEEShashlik -m runJob.mac
 
 # Copy out.root to shome
-export SHOME_OUTDIR=/shome/tklijnsm/testbeam/geant4/jobs/output/$JOB_NAME/
+export SHOME_OUTDIR=/shome/micheli/geant4/jobs/output/$JOB_NAME/
 mkdir -p $SHOME_OUTDIR
 cp $JOB_OUTDIR/out.root $SHOME_OUTDIR/out.root

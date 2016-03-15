@@ -30,11 +30,11 @@ def main():
 
 
     # Copy the per-job Geant4 macro to /cmake
-    shutil.copyfile( 'runJob.mac', '/shome/tklijnsm/testbeam/geant4/EEShashlikSimulation/H4OpticalSmall/cmake/runJob.mac' )
+    shutil.copyfile( 'runJob.mac', '/shome/micheli/geant4/EEShashlikSimulation/H4OpticalSmall/cmake/runJob.mac' )
 
     # Set the directories for stdout and for the out.root files
-    stddir = '/shome/tklijnsm/testbeam/geant4/jobs/stdout/'
-    outdir = '/shome/tklijnsm/testbeam/geant4/jobs/output/'
+    stddir = '/shome/micheli/geant4/jobs/stdout/'
+    outdir = '/shome/micheli/geant4/jobs/output/'
 
     # Submit jobs
     for i in range(n_jobs):
