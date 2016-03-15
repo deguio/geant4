@@ -32,9 +32,9 @@
 // Number of layers, BGOs and fibres
 // Better to set these here to prevent problems with ROOT branch creation and filling
 #include <vector>
-int nLayers = 1;
+int nLayers = 15;
 int nBGOs = 24;
-int nFibres = 4;
+int nFibres = 1;
 
 int nPhotonsForTiming=100;
 std::vector<float> time_vector;

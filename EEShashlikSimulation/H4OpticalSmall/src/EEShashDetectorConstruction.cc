@@ -995,6 +995,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   for( int ix=-1; ix<=1; ix+=2 ) {
     for( int iy=-1; iy<=1; iy+=2 ) {
 
+      if(fibreCopy<nFibres){
+
       //sin and cos for the rotation
       G4double xPos = ix*(calorSizeXY/2.-0.696);
       G4double yPos = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2) + xPos*xPos);
@@ -1070,6 +1072,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                      false,            // no boolean operation
                      cathodeCopy,                // copy number
                      fCheckOverlaps);  // checking overlaps 
+      }
 
       fibreCopy++;
       greaseCopy++;
