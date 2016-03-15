@@ -34,7 +34,7 @@
 #include <vector>
 int nLayers = 15;
 int nBGOs = 24;
-int nFibres = 1;
+int nFibres = 4;
 
 int nPhotonsForTiming=100;
 std::vector<float> time_vector;
