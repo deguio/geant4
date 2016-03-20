@@ -8,12 +8,31 @@
 #ifndef Analyzer_h
 #define Analyzer_h
 
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cstdlib>
+#include <sstream>
+
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
 
+#include "DrawTools.h"
+#include "TCanvas.h"
+#include "TFile.h"
+#include "TTree.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TLegend.h"
+#include "TGaxis.h"
+#include "TVectorD.h"
+#include "TF1.h"
+#include "TGraphErrors.h"
+
 // Header file for the classes stored in the TTree if any.
 #include <vector>
+#include <string>
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -74,7 +93,7 @@ public :
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop();
+   virtual void     Loop(std::string setup, std::string energy);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 };

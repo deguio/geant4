@@ -1,21 +1,3 @@
-#include <iostream>
-#include <string>
-#include <cmath>
-#include <cstdlib>
-#include <sstream>
-
-#include "DrawTools.h"
-#include "TCanvas.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TLegend.h"
-#include "TGaxis.h"
-#include "TVectorD.h"
-#include "TF1.h"
-#include "TGraphErrors.h"
-
 #include "Analyzer.h"
 
 int main( int argc, char* argv[] ) {
@@ -34,7 +16,7 @@ int main( int argc, char* argv[] ) {
     }
   } else {
     std::cout << "Usage:" << std::endl;
-    std::cout << "./plotterMaps ([setup]) ([energy])" << std::endl;
+    std::cout << "./plotterTiming ([setup]) ([energy])" << std::endl;
     exit(12345);
   }
 
@@ -42,7 +24,10 @@ int main( int argc, char* argv[] ) {
 
   TString fileName = "files/totalOut_"+setup+"_"+energy+".root";
 
-  TFile* inFile=TFile::Open(fileName);
+  TFile* inFile = TFile::Open(fileName);
+  TTree* tree = (TTree*) inFile->Get("tree");
+  Analyzer t(tree);
+  t.Loop(setup, energy);
 
   return 0;
 
