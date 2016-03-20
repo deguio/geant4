@@ -13,7 +13,7 @@ import shutil
 import subprocess
 import datetime
 import re
-
+import time
 
 ########################################
 # Main
@@ -21,20 +21,34 @@ import re
 
 def main():
 
-    n_jobs = 2
+    n_jobs = 100
+
+    # Energy string
+    energy = "100GeV"
+#    energy = "50GeV"
+
+    # Setup string
+    setup = "simpler"
+    print 'submitting jobs for '+setup
+
 
     # Get number of events per run
-    with open( 'runJob.mac', 'r' ) as macfile:
+    runJobStr='runJob_'+energy+'_'+setup+'.mac'
+
+    with open( runJobStr, 'r' ) as macfile:
         mac = macfile.read()
         n_events = re.search( r'/run/beamOn\s+([0-9]+)', mac ).group(1)
 
 
     # Copy the per-job Geant4 macro to /cmake
-    shutil.copyfile( 'runJob.mac', '/shome/micheli/geant4/EEShashlikSimulation/H4OpticalSmall_simpler/cmake/runJob.mac' )
+    shutil.copyfile( runJobStr, '/shome/micheli/geant4/EEShashlikSimulation/H4OpticalSmall_'+setup+'/cmake/runJob_'+energy+'_'+setup+'.mac' )
+    
 
     # Set the directories for stdout and for the out.root files
-    stddir = '/shome/micheli/geant4/jobs/stdout/'
-    outdir = '/shome/micheli/geant4/jobs/output/'
+    stddir = '/shome/micheli/geant4/jobs/stdout/'+energy+'_'+setup+"/"
+    outdir = '/shome/micheli/geant4/jobs/output/'+energy+'_'+setup+"/"
+
+    print stddir
 
     # Submit jobs
     for i in range(n_jobs):
@@ -45,14 +59,21 @@ def main():
         cmd = [
             'qsub',
             '-q', 'all.q',
+#            '-q', 'long.q',
             '-o', stddir + JOBNAME,
             '-e', stddir + JOBNAME,
             '-N', JOBNAME,
-            'jobscript.sh'
+            '-v', 'ENERGY='+energy,
+            '-v', 'SETUP='+setup,
+            'jobscript.sh',
             ]
 
+        print cmd
+
         #subprocess.call( cmd , stdout=open(os.devnull, 'wb') )
-        subprocess.call( cmd )
+        subprocess.call(cmd)
+        time.sleep(5)
+
 
     with open( 'timelog.txt', 'a' ) as timelog:
         timelog.write( 'Submitted {0} jobs, {1} events per job at {2}\n'.format(
