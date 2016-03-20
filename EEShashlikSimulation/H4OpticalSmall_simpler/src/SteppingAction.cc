@@ -3,6 +3,7 @@
 #include "G4TransportationManager.hh"
 #include "G4PropagatorInField.hh"
 
+#include "TMath.h"
 #include "CreateTree.h"
 
 using namespace std;
@@ -76,6 +77,11 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
     theTrack->SetTrackStatus(fStopAndKill);
   }
   
+  //  if(theTrack->GetCreatorProcess() && particleType->GetParticleName()=="gamma")  std::cout<<"particle:"<<particleType->GetParticleName()<<" volume:"<<theTrack->GetLogicalVolumeAtVertex()->GetName()<<" id:"<<trackID<<" energy:"<<theTrack->GetTotalEnergy()/eV<<" process:"<<theTrack->GetCreatorProcess()->GetProcessName()<<std::endl;
+  G4ThreeVector direction=theTrack->GetMomentumDirection();
+  //  std::cout<<"particle: "<<particleType->GetParticleName()<<" step:"<<nStep<<" "<<direction.theta()<<" "<<direction.phi()<<std::endl;
+  //  if(theTrack->GetCreatorProcess())  std::cout<<"particle:"<<particleType->GetParticleName()<<" "<<theTrack->GetCreatorProcess()->GetProcessName()<<" step:"<<nStep<<" "<<direction.theta()<<" "<<direction.phi()<<std::endl;
+
 
   // optical photon
   if( particleType == G4OpticalPhoton::OpticalPhotonDefinition() )
@@ -84,15 +90,47 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
       G4int copyNo = theTouchable->GetCopyNumber();
       G4int motherCopyNo = theTouchable->GetCopyNumber(1);
       
+
+
       //FUCK IT Let's just kill them before they bounce that much...
       if( nStep>6 && theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act")){
 	//	theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	//	std::cout<<"mortacci Act"<<nStep<<" particle:"<<particleType->GetParticleName()<<" volume:"<<theTrack->GetLogicalVolumeAtVertex()->GetName()<<" id:"<<trackID<<" position:"<<global_x<<" "<<global_y<<" "<<global_z<<" energy:"<<theTrack->GetTotalEnergy()/eV<<std::endl;
-	theTrack->SetTrackStatus(fStopAndKill);
+	theTrack->SetTrackStatus(fKillTrackAndSecondaries);
       }
 
       G4String processName = theTrack->GetCreatorProcess()->GetProcessName();
-      
+
+      //don't track cherenkov photons if they are outside quantum efficiency
+      float lambdaLowCut=480*1.e-9;
+      float lambdaUpCut=620*1.e-9;
+      if(nStep==1 && processName=="Cerenkov"){
+	float energy=theTrack->GetTotalEnergy()/eV;
+	float h = 6.62607004*pow(10,-34);
+	float c = 3*pow(10,8);
+	float e = 1.60218*pow(10,-19);
+	float lambda = (h*c)/(energy*e);
+	if(lambda<lambdaLowCut || lambda>lambdaUpCut ){
+	  theTrack->SetTrackStatus(fStopAndKill);
+	}
+      }
+   
+      //this only for fibre only configuration      if(!( theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Fibr") || theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Grease"))) theTrack->SetTrackStatus(fStopAndKill);//kill everything exiting the fibre
+   
+      G4ThreeVector direction=theTrack->GetMomentumDirection();
+
+      //      float totalReflectionAngle=20.4;
+      float totalReflectionAngle=55;//this is the max angle that will be reflected considering also cladding-air reflection (in fact the correct one is 50.94
+      float pi=TMath::Pi();
+      float radTotalReflectionAngle=totalReflectionAngle*pi/180;
+      float theta=direction.theta();
+      if(theta>pi/2. && theta<pi) theta=pi-theta;
+      if(direction.theta()>pi/2.) theTrack->SetTrackStatus(fStopAndKill);//FIXME killing back photons
+      //      if(direction.theta()>pi/2.)      std::cout<<"process:"<<processName<<" step:"<<nStep<<" original theta "<<direction.theta()<<" new theta "<<theta<<" "<<direction.phi()<<" "<<radTotalReflectionAngle<<std::endl;
+      if(nStep==1)      if(theta>radTotalReflectionAngle){
+	  theTrack->SetTrackStatus(fStopAndKill);
+	  //	  std::cout<<"killing"<<std::endl;
+	}
       //----------------------------
       // count photons at production
       if( ( theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act") ) &&
@@ -119,6 +157,17 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 
 	EOpt_0+=theTrack->GetTotalEnergy()/eV;
 	CreateTree::Instance() -> Time_deposit.push_back(theTrack->GetGlobalTime()/nanosecond);
+	G4ThreeVector directionStart=theTrack->GetVertexPosition();//position at start point
+	CreateTree::Instance() -> Z_deposit.push_back(directionStart.z()/mm);
+	if(processName=="OpWLS"){
+	  CreateTree::Instance() -> Process_deposit.push_back(1);
+	}else if(processName=="Scintillation"){
+	  CreateTree::Instance() -> Process_deposit.push_back(2);
+	}else if(processName=="Cerenkov"){
+	  CreateTree::Instance() -> Process_deposit.push_back(3);
+	}else{
+	  CreateTree::Instance() -> Process_deposit.push_back(-1);
+	}
 
 	fibre0 += 1;
 

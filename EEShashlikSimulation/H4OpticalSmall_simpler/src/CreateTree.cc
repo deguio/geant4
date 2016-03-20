@@ -20,6 +20,7 @@ CreateTree::CreateTree(TString name)
   this->GetTree()->Branch("Event",&this->Event,"Event/I");
   this->GetTree()->Branch("Time_deposit",&this->Time_deposit);
   this->GetTree()->Branch("Process_deposit",&this->Process_deposit);
+  this->GetTree()->Branch("Z_deposit",&this->Z_deposit);
   this->GetTree()->Branch("opPhoton_time",&this->opPhoton_time);    
   this->GetTree()->Branch("opPhoton_process",&this->opPhoton_process);    
   this->GetTree()->Branch("Eabs",&this->Eabs,"Eabs/F");
@@ -61,6 +62,7 @@ void CreateTree::Clear()
   Event = 0;
   Time_deposit.clear();
   Process_deposit.clear();
+  Z_deposit.clear();
   opPhoton_time.clear();
   opPhoton_process.clear();
   Eabs=0;
