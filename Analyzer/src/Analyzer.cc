@@ -86,7 +86,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
    if (fChain == 0) return;
 
    Long64_t nentries = fChain->GetEntries();
-   nentries = 10;
+   //   nentries = 10;
 
    outDir_="outFiles/plots/"+setup+"_"+energy;
    system(Form("mkdir -p %s", outDir_.Data()));
