@@ -29,10 +29,12 @@
 #include "TVectorD.h"
 #include "TF1.h"
 #include "TGraphErrors.h"
+#include "TString.h"
 
 // Header file for the classes stored in the TTree if any.
 #include <vector>
 #include <string>
+#include <map>
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -40,6 +42,9 @@ class Analyzer {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
+
+   std::map<TString,TH1F*> histos_;
+   TString outDir_;
 
    // Declaration of leaf types
    Int_t           Event;
@@ -96,6 +101,9 @@ public :
    virtual void     Loop(std::string setup, std::string energy);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
+   void addHisto(TString name, int nBins, float XLow, float XUp,TString XLabel);
+   void createHistos();
+   void drawHistos();
 };
 
 #endif
