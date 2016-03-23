@@ -24,8 +24,10 @@ def main():
     n_jobs = 100
 
     # Energy string
-    energy = "100GeV"
+#    energy = "200GeV"
+#    energy = "100GeV"
 #    energy = "50GeV"
+    energy = "20GeV"
 
     # Setup string
     setup = "simpler"
