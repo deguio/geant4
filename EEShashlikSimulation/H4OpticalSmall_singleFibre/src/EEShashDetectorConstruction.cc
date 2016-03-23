@@ -326,7 +326,8 @@ void EEShashDetectorConstruction::DefineMaterials()
   assert(sizeof(photonEnergy_emis) == sizeof(emissionPS));
   const G4int nEntries_emis = sizeof(photonEnergy_emis)/sizeof(G4double);
 
-  G4double photonEnergy_WLS_abs[] = { 1*eV, 2*eV,3*eV, 6*eV};
+  //  G4double photonEnergy_WLS_abs[] = { 1*eV, 2*eV,3*eV, 6*eV};//absorbing in cef3 transparent otuside
+  G4double photonEnergy_WLS_abs[] = { 1*eV, 2*eV,3*eV, 4.2*eV};//absorbing in cef3 transparent otuside
   G4double WLS_abs[]= { 10*m, 4*m, 0.1*mm, 0.1*mm};
 
   const G4int nEntries_WLS_abs = sizeof(photonEnergy_WLS_abs)/sizeof(G4double);
@@ -346,6 +347,7 @@ void EEShashDetectorConstruction::DefineMaterials()
   mptPolystyrene->AddProperty("WLSABSLENGTH",photonEnergy_WLS_abs,WLS_abs,nEntries_WLS_abs);
   // From Kuraray:
   //mptPolystyrene->AddProperty("WLSABSLENGTH",photonEnergy_PS_abs,absPS,nEntries_PS_abs);
+    mptPolystyrene->AddProperty("ABSLENGTH",photonEnergy_WLS_abs,WLS_abs,nEntries_WLS_abs);
 
   mptPolystyrene->AddProperty("WLSCOMPONENT",photonEnergy_emis,emissionPS,nEntries_emis);
   mptPolystyrene->AddConstProperty("WLSTIMECONSTANT", 7.0*ns);
