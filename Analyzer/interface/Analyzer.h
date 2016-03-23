@@ -31,10 +31,23 @@
 #include "TGraphErrors.h"
 #include "TString.h"
 
+
+#include "RooDataHist.h"
+#include "RooRealVar.h"
+#include "RooDataSet.h"
+#include "RooGaussian.h"
+#include "RooLandau.h"
+#include "RooFFTConvPdf.h"
+#include "RooPlot.h"
+#include "RooCBShape.h"
+#include "RooCruijff.h"
+
+
 // Header file for the classes stored in the TTree if any.
 #include <vector>
 #include <string>
 #include <map>
+#include <algorithm>
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -45,6 +58,8 @@ public :
 
    std::map<TString,TH1F*> histos_;
    TString outDir_;
+   std::string energy_;
+   std::string setup_;
 
    // Declaration of leaf types
    Int_t           Event;
@@ -104,6 +119,8 @@ public :
    void addHisto(TString name, int nBins, float XLow, float XUp,TString XLabel);
    void createHistos();
    void drawHistos();
+   void fitHisto(TH1F* histo);
+   template <typename T>  std::vector<size_t> sort_indexes(const std::vector<T> &v);
 };
 
 #endif
@@ -220,4 +237,20 @@ Int_t Analyzer::Cut(Long64_t entry)
 // returns -1 otherwise.
    return 1;
 }
+
+template <typename T> 
+std::vector<size_t> Analyzer::sort_indexes(const std::vector<T> &v) {
+
+  // initialize original index locations
+  std::vector<size_t> idx(v.size());
+  for (size_t i = 0; i != idx.size(); ++i) idx[i] = i;
+
+  // sort indexes based on comparing values in v
+  sort(idx.begin(), idx.end(),
+       [&v](size_t i1, size_t i2) {return v[i1] < v[i2];});
+
+  return idx;
+
+}
+
 #endif // #ifdef Analyzer_cxx
