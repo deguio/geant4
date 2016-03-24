@@ -72,6 +72,10 @@ void Analyzer::createHistos(){
 
  addHisto("time_at_max",100,0,50,"time [ns]");
 
+ addHisto("Z_nPhotTiming",420,0,420,"Z [mm]");
+ addHisto("Z_firstPhotons",420,0,420,"Z [mm]");
+ addHisto("Process_nPhotTiming",3,0.5,3.5,"process"); 
+ addHisto("Time_nPhotTiming",100,0,50,"time [ns]"); 
 }
 
 
@@ -101,6 +105,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
 //    fChain->GetEntry(jentry);       //read all branches
 //by  b_branchname->GetEntry(ientry); //read only this branch
    if (fChain == 0) return;
+
 
    Long64_t nentries = fChain->GetEntries();
    //   nentries = 200;
@@ -196,23 +201,30 @@ void Analyzer::Loop(std::string setup, std::string energy)
       for (auto i: Analyzer::sort_indexes( *Time_deposit)) {
 	nPhot++;
 	if(nPhot>nPhotTiming)break;
-	//	std::cout<<nPhot<<" "<< Time_deposit->at(i) << std::endl;
-	if(i<Time_deposit->size()){
-	  averageTiming+=Time_deposit->at(i);
-	  histos_["processTimeArrival_avg"]->Fill(Process_deposit->at(i));
-	  averageZ+=Z_deposit->at(i);
-	  if(Process_deposit->at(i)==1){
+	float time = Time_deposit->at(i);
+	int process = Process_deposit->at(i); 
+	int Z = Z_deposit->at(i); 
+	//	std::cout<<nPhot<<" "<< time << std::endl;
+	if(nPhot<Time_deposit->size()){
+	  averageTiming+=time;
+	  histos_["processTimeArrival_avg"]->Fill(process);
+	  averageZ+=Z;
+	  if(nPhot<4)	  histos_["Z_firstPhotons"]->Fill(Z);
+	  histos_["Z_nPhotTiming"]->Fill(Z);
+	  histos_["Process_nPhotTiming"]->Fill(process);
+	  histos_["Time_nPhotTiming"]->Fill(time);
+	  if(process==1){
 	    nPhotTiming_wls++;
-	    averageTiming_wls+=Time_deposit->at(i);
-	    averageZ_wls+=Z_deposit->at(i);
-	  }else if(Process_deposit->at(i)==2){
+	    averageTiming_wls+=time;
+	    averageZ_wls+=Z;
+	  }else if(process==2){
 	    nPhotTiming_scint++;
-	    averageTiming_scint+=Time_deposit->at(i);
-	    averageZ_scint+=Z_deposit->at(i);
-	  }else if(Process_deposit->at(i)==3){
+	    averageTiming_scint+=time;
+	    averageZ_scint+=Z;
+	  }else if(process==3){
 	    nPhotTiming_cher++;
-	    averageTiming_cher+=Time_deposit->at(i);
-	    averageZ_cher+=Z_deposit->at(i);
+	    averageTiming_cher+=time;
+	    averageZ_cher+=Z;
 	  }
 	}
       }
@@ -244,6 +256,12 @@ void Analyzer::Loop(std::string setup, std::string energy)
    histos_["waveform_wls"]->Draw("same");
    wave_canvas.SaveAs(outDir_+"waveform.png");
    wave_canvas.SaveAs(outDir_+"waveform.pdf");
+
+   meanValueTime->Write("meanValueTime");
+   meanValueTimeErr->Write("meanValueTimeErr");
+
+   resValueTime->Write("resValueTime");
+   resValueTimeErr->Write("resValueTimeErr");
 
    outFile->Write();
    outFile->Close();
@@ -298,6 +316,13 @@ void Analyzer::fitHisto(TH1F* histo){
   lego->SetTextSize(0.036);
   lego->AddEntry(  (TObject*)0 ,Form("#mu = %.0f #pm %.0f ps", meanr.getVal()*1.e3, meanr.getError()*1.e3), "");
   lego->AddEntry(  (TObject*)0 ,Form("#sigma = %.0f #pm %.0f ps", rms*1.e3, rmsErr*1.e3), "");
+
+  meanValueTime[0]=meanr.getVal()*1.e3;
+  meanValueTimeErr[0]=meanr.getError()*1.e3;
+
+  resValueTime[0]=rms*1.e3;
+  resValueTimeErr[0]=rmsErr*1.e3;
+
 
   lego->SetFillColor(0);
   lego->Draw("same");

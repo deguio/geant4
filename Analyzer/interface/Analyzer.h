@@ -41,7 +41,7 @@
 #include "RooPlot.h"
 #include "RooCBShape.h"
 #include "RooCruijff.h"
-
+#include <TVectorD.h>
 
 // Header file for the classes stored in the TTree if any.
 #include <vector>
@@ -60,6 +60,13 @@ public :
    TString outDir_;
    std::string energy_;
    std::string setup_;
+
+   TVectorD* meanValueTime;
+   TVectorD* meanValueTimeErr;
+	   
+   TVectorD* resValueTime;
+   TVectorD* resValueTimeErr;
+   
 
    // Declaration of leaf types
    Int_t           Event;
@@ -175,6 +182,13 @@ void Analyzer::Init(TTree *tree)
    // code, but the routine can be extended by the user if needed.
    // Init() will be called many times when running on PROOF
    // (once per file to be processed).
+
+  meanValueTime = new TVectorD(1);
+  meanValueTimeErr = new TVectorD(1);
+
+  resValueTime = new TVectorD(1);
+  resValueTimeErr = new TVectorD(1);
+
 
    // Set object pointer
    Time_deposit = 0;
