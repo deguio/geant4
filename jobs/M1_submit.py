@@ -96,7 +96,7 @@ def main():
 
         #subprocess.call( cmd , stdout=open(os.devnull, 'wb') )
         subprocess.call(cmd)
-        time.sleep(5)
+        time.sleep(3)
 
 
     with open( 'timelog.txt', 'a' ) as timelog:
