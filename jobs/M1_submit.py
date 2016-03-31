@@ -26,11 +26,12 @@ def main():
     # Energy string
 #    energy = "200GeV"
 #    energy = "100GeV"
-#    energy = "50GeV"
-    energy = "20GeV"
+    energy = "50GeV"
+#    energy = "20GeV"
 
     # Setup string
     setup = "simpler"
+#    setup = "singleFibre"
     print 'submitting jobs for '+setup
 
 
