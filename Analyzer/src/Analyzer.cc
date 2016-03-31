@@ -3,7 +3,7 @@
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
-
+#define DOSHAPING 0
 
 void Analyzer::addHisto(TString name, int nBins, float XLow, float XUp, TString XLabel){
 
@@ -76,11 +76,17 @@ void Analyzer::createHistos(){
  addHisto("Z_firstPhotons",420,0,420,"Z [mm]");
  addHisto("Process_nPhotTiming",3,0.5,3.5,"process"); 
  addHisto("Time_nPhotTiming",100,0,50,"time [ns]"); 
+
+ addHisto("time_frac50",300,10,20,"time[ns]");
+ addHisto("time_frac50_shaped",400,10,30,"time[ns]");
 }
 
 
 void Analyzer::Loop(std::string setup, std::string energy)
 {
+  gROOT->ProcessLine("gPrintViaErrorHandler = kTRUE");
+  gROOT->ProcessLine("gErrorIgnoreLevel = 6000");
+
 //   In a ROOT session, you can do:
 //      Root > .L Analyzer.C
 //      Root > Analyzer t
@@ -108,7 +114,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
 
 
    Long64_t nentries = fChain->GetEntries();
-   //   nentries = 200;
+   //   nentries = 10;
    energy_=energy;
    setup_=setup;
 
@@ -128,7 +134,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
 
 
    Long64_t nbytes = 0, nb = 0;
-   TH1F* wave = new TH1F("wave","wave",200,0,100);
+   TH1F* wave = new TH1F("wave","wave",200,0,200);
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
@@ -174,17 +180,78 @@ void Analyzer::Loop(std::string setup, std::string energy)
       }
 
 
-      histos_["time_at_max"]->Fill(wave->GetBinCenter(wave->GetMaximumBin()));
-	///	std::cout<<wave->GetMaximumBin()<<std::endl;
-	if(jentry==200){
-	  TCanvas dummy;
-	  TF1 f("f","pol2",0,50);
-	  wave->Fit("f","R","",wave->GetBinCenter(wave->GetMaximumBin())-2*wave->GetBinWidth(0),wave->GetBinCenter(wave->GetMaximumBin())+2*wave->GetBinWidth(0));
-	  wave->Draw();
-	  f.SetLineColor(kRed);
-	  f.Draw("same");
-	  dummy.SaveAs("dummy.png");
+
+
+
+
+      //shaping of photodetectors
+
+      wave->Sumw2();
+      wave->Scale(1./wave->Integral());//even if for our porposes it's not important pdfs should be normalized to avoid troubles in convolution
+
+      TGraph* waveGraph = new TGraph(wave);
+      Waveform* waveF = new Waveform(wave->GetNbinsX(),waveGraph->GetX(),waveGraph->GetY());
+      Waveform::max_amplitude_informations wave_max_bare = waveF->max_amplitude(4,100,3);
+
+
+      histos_["time_frac50"]->Fill(waveF->time_at_frac(0,100,0.5,wave_max_bare,3));
+
+      
+
+    
+      if(DOSHAPING){
+	RooRealVar t("t","t", 0, 200);
+	RooDataHist waveHist("wave","dataset with t",t,RooFit::Import(*wave) );
+	RooHistPdf histpdf1("histpdf1","histpdf1",t,waveHist);
+	
+	
+	TF1 *f = new  TF1("f", "pow(exp(1.)*[1]*(x)/[0],[0])*exp(-[1]*(x))",0.,200.);
+	f->SetParameters(3.0, 0.8);
+	
+	RooAbsPdf* rfa1 = RooFit::bindPdf(f,t);
+	
+	RooNumConvPdf convolutionShaping("convolutionShaping","exp (X) crrc",t,histpdf1,*rfa1) ;
+	RooRealVar center("center","center",50,0,400);
+	RooRealVar width("width","width",50,0,400);
+	
+	convolutionShaping.setConvolutionWindow(center,width,1);
+	convolutionShaping.verboseEval(0);
+	convolutionShaping.convIntConfig().setEpsAbs(0.001);//absolute precision
+	convolutionShaping.convIntConfig().setEpsRel(0.001);//relative precision
+	
+	if(jentry==0){
+	  RooPlot* frame1 = t.frame(RooFit::Title("histogram pdf")) ;
+	  //      rfa1->plotOn(frame1);
+	  waveHist.plotOn(frame1,RooFit::LineColor(kBlack),RooFit::DrawOption("L"),RooFit::LineWidth(2));
+	  convolutionShaping.plotOn(frame1,RooFit::LineColor(kRed)) ;
+	  
+	  
+	  TCanvas c1("c_histpdf");
+	  frame1->Draw();
+	  c1.SaveAs("histpdf_analyzer.png");
 	}
+	
+	TH1* histo_shaped =  convolutionShaping.createHistogram("t",200);
+	histo_shaped->SetName("histo_shaped");
+
+	TGraph* waveGraph_shaped=new TGraph(histo_shaped);
+	Waveform* waveF_shaped = new Waveform(200,waveGraph_shaped->GetX(),waveGraph_shaped->GetY());
+	Waveform::max_amplitude_informations wave_max_bare_shaped = waveF_shaped->max_amplitude(4,100,3);
+
+	histos_["time_frac50_shaped"]->Fill(waveF_shaped->time_at_frac(0,100,0.5,wave_max_bare_shaped,3));
+
+      }
+
+      
+      if(jentry==200){
+	TCanvas dummy;
+	TF1 f("f","pol2",0,50);
+	wave->Fit("f","R","",wave->GetBinCenter(wave->GetMaximumBin())-2*wave->GetBinWidth(0),wave->GetBinCenter(wave->GetMaximumBin())+2*wave->GetBinWidth(0));
+	wave->Draw();
+	f.SetLineColor(kRed);
+	f.Draw("same");
+	dummy.SaveAs("dummy.png");
+      }
 	  wave->Reset();	
 
 
@@ -242,12 +309,13 @@ void Analyzer::Loop(std::string setup, std::string energy)
    }
 
 
-   fitHisto(histos_["timeArrival_avg"]);
+   fitHisto(histos_["timeArrival_avg"],resValueTime,resValueTimeErr);
+   fitHisto(histos_["time_frac50"],resValueTime_frac50,resValueTimeErr_frac50);
+   if(DOSHAPING)    fitHisto(histos_["time_frac50_shaped"],resValueTime_frac50_shaped,resValueTimeErr_frac50_shaped);
    drawHistos();
 
    TCanvas wave_canvas;
    histos_["waveform_total"]->Draw();
-   histos_["waveform_total"]->Print();
    histos_["waveform_scint"]->SetLineColor(kRed);
    histos_["waveform_scint"]->Draw("same");
    histos_["waveform_cher"]->SetLineColor(kBlue);
@@ -263,13 +331,20 @@ void Analyzer::Loop(std::string setup, std::string energy)
    resValueTime->Write("resValueTime");
    resValueTimeErr->Write("resValueTimeErr");
 
+   resValueTime_frac50->Write("resValueTime_frac50");
+   resValueTimeErr_frac50->Write("resValueTimeErr_frac50");
+
+   resValueTime_frac50_shaped->Write("resValueTime_frac50_shaped");
+   resValueTimeErr_frac50_shaped->Write("resValueTimeErr_frac50_shaped");
+
+
    outFile->Write();
    outFile->Close();
 
 }
 
 
-void Analyzer::fitHisto(TH1F* histo){
+void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr){
 //-----------------fit with cruijff ------------------------
   double peakpos = histo->GetBinCenter(histo->GetMaximumBin());
   double sigma = histo->GetRMS();
@@ -284,7 +359,7 @@ void Analyzer::fitHisto(TH1F* histo){
   RooRealVar x("x","deltaT", fitmin, fitmax);
   RooDataHist data("data","dataset with x",x,RooFit::Import(*histo) );
 
-  RooRealVar meanr("meanr","Mean",peakpos,peakpos-3*sigma, peakpos+3*sigma);
+  RooRealVar meanr("meanr","Mean",peakpos+sigma,peakpos-3*sigma, peakpos+3*sigma);
   RooRealVar widthL("widthL","#sigmaL",sigma , 0, 5*sigma);
   RooRealVar widthR("widthR","#sigmaR",sigma , 0, 5*sigma);
   RooRealVar alphaL("alphaL","#alpha",5.08615e-02 , 0., 1.);
@@ -320,8 +395,8 @@ void Analyzer::fitHisto(TH1F* histo){
   meanValueTime[0]=meanr.getVal()*1.e3;
   meanValueTimeErr[0]=meanr.getError()*1.e3;
 
-  resValueTime[0]=rms*1.e3;
-  resValueTimeErr[0]=rmsErr*1.e3;
+  res[0]=rms*1.e3;
+  resErr[0]=rmsErr*1.e3;
 
 
   lego->SetFillColor(0);
@@ -336,3 +411,6 @@ void Analyzer::fitHisto(TH1F* histo){
 
 
 }
+
+
+

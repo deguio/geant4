@@ -18,7 +18,9 @@
 #include <TChain.h>
 #include <TFile.h>
 
+#include "Waveform.h"
 #include "DrawTools.h"
+
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -41,6 +43,12 @@
 #include "RooPlot.h"
 #include "RooCBShape.h"
 #include "RooCruijff.h"
+#include "RooGenericPdf.h"
+#include "RooTFnBinding.h"
+#include "RooTFnPdfBinding.h"
+#include  "RooNumConvPdf.h"
+
+
 #include <TVectorD.h>
 
 // Header file for the classes stored in the TTree if any.
@@ -66,6 +74,12 @@ public :
 	   
    TVectorD* resValueTime;
    TVectorD* resValueTimeErr;
+
+   TVectorD* resValueTime_frac50;
+   TVectorD* resValueTimeErr_frac50;
+
+   TVectorD* resValueTime_frac50_shaped;
+   TVectorD* resValueTimeErr_frac50_shaped;
    
 
    // Declaration of leaf types
@@ -126,7 +140,7 @@ public :
    void addHisto(TString name, int nBins, float XLow, float XUp,TString XLabel);
    void createHistos();
    void drawHistos();
-   void fitHisto(TH1F* histo);
+   void fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr);
    template <typename T>  std::vector<size_t> sort_indexes(const std::vector<T> &v);
 };
 
@@ -188,6 +202,12 @@ void Analyzer::Init(TTree *tree)
 
   resValueTime = new TVectorD(1);
   resValueTimeErr = new TVectorD(1);
+
+  resValueTime_frac50 = new TVectorD(1);
+  resValueTimeErr_frac50 = new TVectorD(1);
+
+  resValueTime_frac50_shaped = new TVectorD(1);
+  resValueTimeErr_frac50_shaped = new TVectorD(1);
 
 
    // Set object pointer
