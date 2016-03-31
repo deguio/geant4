@@ -21,7 +21,7 @@ import time
 
 def main():
 
-    n_jobs = 100
+    n_jobs = 1
 
     # Energy string
     energy = "200GeV"
@@ -80,23 +80,39 @@ def main():
 
         Recreate_dir( stddir + JOBNAME )
 
-        cmd = [
-            subcmd,
-            '-q', queue,
-#            '-q', 'long.q',
-            '-o', stddir + JOBNAME,
-            '-e', stddir + JOBNAME,
-            '-N', JOBNAME,
-            '-v', 'ENERGY='+energy,
-            '-v', 'SETUP='+setup,
-            'jobscript.sh',
-            ]
+        if  'lxpl' not in os.environ["HOSTNAME"]:
+            cmd = [
+                subcmd,
+                '-q', queue,
+                #            '-q', 'long.q',
+                '-o', stddir + JOBNAME,
+                '-e', stddir + JOBNAME,
+                '-N', JOBNAME,
+                '-v', 'ENERGY='+energy,
+                '-v', 'SETUP='+setup,
+                'jobscript.sh',
+                ]
 
-        print cmd
+        else:
 
+            cmd = [
+                subcmd,
+                '-q', queue,
+                #            '-q', 'long.q',
+                '-o', stddir + JOBNAME,
+                '-e', stddir + JOBNAME,
+                '-J', JOBNAME,
+#                '-v', 'ENERGY='+energy,
+#                '-v', 'SETUP='+setup,
+                'jobscript_lxplus.sh '+energy+" "+setup
+                ]
+
+
+            print cmd
+        
         #subprocess.call( cmd , stdout=open(os.devnull, 'wb') )
-        subprocess.call(cmd)
-        time.sleep(3)
+            subprocess.call(cmd)
+            time.sleep(3)
 
 
     with open( 'timelog.txt', 'a' ) as timelog:
