@@ -45,10 +45,12 @@
 
 G4double xBeamPos;
 G4double yBeamPos;
-G4double fibre0;
-G4double fibre1;
-G4double fibre2;
-G4double fibre3;
+G4int NPhotAct;
+G4int fibreStart0;
+G4int fibre0;
+G4int fibre1;
+G4int fibre2;
+G4int fibre3;
 G4double EOpt_0;
 G4double EOpt_1;
 G4double EOpt_2;
@@ -79,7 +81,7 @@ EEShashPrimaryGeneratorAction::EEShashPrimaryGeneratorAction()
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
  
   G4int myseed = time( NULL );
-  G4Random::setTheSeed(myseed);
+  G4Random::setTheSeed(myseed); //to have random events decomment
 
 }
 
@@ -173,6 +175,8 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //   G4double xBeam = -12.+0.696; // centered on a fibre
   //   G4double yBeam = -12.+0.696; // centered on a fibre
   G4cout<<"xBeam:"<<xBeam<<" yBeam:"<<yBeam<<G4endl;
+  NPhotAct=0;
+  fibreStart0=0;
   fibre0=0;
   fibre1=0;
   fibre2=0;

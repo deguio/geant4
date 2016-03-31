@@ -308,6 +308,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   CreateTree::Instance() -> EfibrClad =  fibrHitClad->GetEdep();
 
   CreateTree::Instance() -> Fibre_0 = fibre0;
+  CreateTree::Instance() -> NPhot_Act = NPhotAct;
+  CreateTree::Instance() -> Fibre_start_0 = fibreStart0;
   CreateTree::Instance() -> xPosition = xBeamPos;
   CreateTree::Instance() -> yPosition = yBeamPos;
 

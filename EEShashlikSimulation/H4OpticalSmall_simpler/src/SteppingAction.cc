@@ -84,6 +84,7 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 
 
   // optical photon
+
   if( particleType == G4OpticalPhoton::OpticalPhotonDefinition() )
     {
       
@@ -96,7 +97,8 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
       if( nStep>6 && theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act")){
 	//	theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	//	std::cout<<"mortacci Act"<<nStep<<" particle:"<<particleType->GetParticleName()<<" volume:"<<theTrack->GetLogicalVolumeAtVertex()->GetName()<<" id:"<<trackID<<" position:"<<global_x<<" "<<global_y<<" "<<global_z<<" energy:"<<theTrack->GetTotalEnergy()/eV<<std::endl;
-	theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+	theTrack->SetTrackStatus(fStopAndKill);
+
       }
 
       G4String processName = theTrack->GetCreatorProcess()->GetProcessName();
@@ -117,6 +119,8 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
    
       //this only for fibre only configuration      if(!( theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Fibr") || theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Grease"))) theTrack->SetTrackStatus(fStopAndKill);//kill everything exiting the fibre
    
+
+      /* speeds up simulation but kills a lot of photons i don't know why, in principle should not....
       G4ThreeVector direction=theTrack->GetMomentumDirection();
 
       //      float totalReflectionAngle=20.4;
@@ -128,17 +132,30 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
       if(direction.theta()>pi/2.) theTrack->SetTrackStatus(fStopAndKill);//FIXME killing back photons
       //      if(direction.theta()>pi/2.)      std::cout<<"process:"<<processName<<" step:"<<nStep<<" original theta "<<direction.theta()<<" new theta "<<theta<<" "<<direction.phi()<<" "<<radTotalReflectionAngle<<std::endl;
       if(nStep==1)      if(theta>radTotalReflectionAngle){
-	  theTrack->SetTrackStatus(fStopAndKill);
+	  //	  theTrack->SetTrackStatus(fStopAndKill); FIXME!!!!
 	  //	  std::cout<<"killing"<<std::endl;
 	}
+      */
+
       //----------------------------
-      // count photons at production
+      // count photons at production in cef3
       if( ( theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act") ) &&
 	  (nStep == 1) && (processName == "Scintillation") )
 	{
 	  // CreateTree::Instance()->tot_phot_sci += 1;
 	  // if( !propagateScintillation ) theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	  //  fibre0 += 1; 
+	  NPhotAct +=1;
+	}
+
+      //count photons entering in the fiber
+      if( ( theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Core") ) &&
+	  (nStep == 1) && (processName == "OpWLS") )
+	{
+	  // CreateTree::Instance()->tot_phot_sci += 1;
+	  // if( !propagateScintillation ) theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+	  //  fibre0 += 1; 
+	  fibreStart0 +=1;
 	}
       
       

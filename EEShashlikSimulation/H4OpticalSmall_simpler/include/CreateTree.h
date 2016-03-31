@@ -31,9 +31,12 @@ class CreateTree
   std::vector<int> opPhoton_process;
   float  Eabs;
   float  Eact;
+  int    NPhot_Act;
   float  EfibrCore;
   float  EfibrClad;
   int    nLayers;
+
+  int   Fibre_start_0;
 
   int   Fibre_0;
   int   Fibre_1;

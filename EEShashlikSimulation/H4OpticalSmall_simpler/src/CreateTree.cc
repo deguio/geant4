@@ -25,9 +25,12 @@ CreateTree::CreateTree(TString name)
   this->GetTree()->Branch("opPhoton_process",&this->opPhoton_process);    
   this->GetTree()->Branch("Eabs",&this->Eabs,"Eabs/F");
   this->GetTree()->Branch("Eact",&this->Eact,"Eact/F");
+  this->GetTree()->Branch("NPhot_Act",&this->NPhot_Act,"NPhot_Act/I");
   this->GetTree()->Branch("EfibrCore",&this->EfibrCore,"EfibrCore/F");
   this->GetTree()->Branch("EfibrClad",&this->EfibrClad,"EfibrClad/F");
   this->GetTree()->Branch("nLayers",&this->nLayers,"nLayers/I");
+
+  this->GetTree()->Branch("Fibre_start_0",&this->Fibre_start_0,"Fibre_start_0/I");
 
   this->GetTree()->Branch("Fibre_0",&this->Fibre_0,"Fibre_0/I");
   this->GetTree()->Branch("Fibre_1",&this->Fibre_1,"Fibre_1/I");
@@ -67,10 +70,13 @@ void CreateTree::Clear()
   opPhoton_process.clear();
   Eabs=0;
   Eact=0;
+  NPhot_Act=0;
   EfibrCore=0;
   EfibrClad=0;
   nLayers=0;
   
+  Fibre_start_0=0;
+
   Fibre_0=0;
   Fibre_1=0;
   Fibre_2=0;
