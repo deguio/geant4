@@ -24,15 +24,27 @@ def main():
     n_jobs = 100
 
     # Energy string
-#    energy = "200GeV"
+    energy = "200GeV"
 #    energy = "100GeV"
-    energy = "50GeV"
+#    energy = "50GeV"
 #    energy = "20GeV"
 
     # Setup string
     setup = "simpler"
 #    setup = "singleFibre"
     print 'submitting jobs for '+setup
+
+#sub parameters
+ 
+    subcmd = 'qsub'
+    queue  = 'all.q'
+#    queue = 'long.q'
+
+
+    print os.environ["HOSTNAME"]
+    if  'lxpl' in os.environ["HOSTNAME"]: 
+        subcmd = 'bsub'
+        queue = '8nh'   
 
 
     # Get number of events per run
@@ -43,15 +55,24 @@ def main():
         n_events = re.search( r'/run/beamOn\s+([0-9]+)', mac ).group(1)
 
 
-    # Copy the per-job Geant4 macro to /cmake
-    shutil.copyfile( runJobStr, '/shome/micheli/geant4/EEShashlikSimulation/H4OpticalSmall_'+setup+'/cmake/runJob_'+energy+'_'+setup+'.mac' )
-    
 
+    if  'lxpl' not in os.environ["HOSTNAME"]:
+    # Copy the per-job Geant4 macro to /cmake
+        shutil.copyfile( runJobStr, '/shome/micheli/geant4/EEShashlikSimulation/H4OpticalSmall_'+setup+'/cmake/runJob_'+energy+'_'+setup+'.mac' )
     # Set the directories for stdout and for the out.root files
-    stddir = '/shome/micheli/geant4/jobs/stdout/'+energy+'_'+setup+"/"
-    outdir = '/shome/micheli/geant4/jobs/output/'+energy+'_'+setup+"/"
+        stddir = '/shome/micheli/geant4/jobs/stdout/'+energy+'_'+setup+"/"
+        outdir = '/shome/micheli/geant4/jobs/output/'+energy+'_'+setup+"/"
+
+    else:
+        shutil.copyfile( runJobStr, '/afs/cern.ch/work/m/micheli/geant4_new/EEShashlikSimulation/H4OpticalSmall_'+setup+'/cmake/runJob_'+energy+'_'+setup+'.mac' )
+        stddir = '/afs/cern.ch/work/m/micheli/geant4_new/jobs/stdout/'+energy+'_'+setup+"/"
+        outdir = '/afs/cern.ch/work/m/micheli/geant4_new/jobs/output/'+energy+'_'+setup+"/"
+
 
     print stddir
+
+
+    exit
 
     # Submit jobs
     for i in range(n_jobs):
@@ -60,8 +81,8 @@ def main():
         Recreate_dir( stddir + JOBNAME )
 
         cmd = [
-            'qsub',
-            '-q', 'all.q',
+            subcmd,
+            '-q', queue,
 #            '-q', 'long.q',
             '-o', stddir + JOBNAME,
             '-e', stddir + JOBNAME,

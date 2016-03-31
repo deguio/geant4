@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [[ $HOSTNAME = "t3ui"* ]]; then
     # Set paths to the extra Geant4 data; works by default on lxplus
     export G4LEDATA=/shome/tklijnsm/geant4/geant4.10.01.p02-install/share/Geant4-10.1.2/data/G4EMLOW6.40
@@ -20,6 +22,7 @@ if [[ $HOSTNAME = "t3ui"* ]]; then
     echo "Environment set up for PSI"
     echo "Remember to also set up CMSSW"
 else
+#    source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.32/x86_64-slc6-gcc49-opt/root/bin/thisroot.sh    
     source /afs/cern.ch/sw/lcg/contrib/gcc/4.7/x86_64-slc6/setup.sh
     source /afs/cern.ch/sw/lcg/external/geant4/10.0.p01/x86_64-slc6-gcc47-opt/CMake-setup.sh
     export CXX=/afs/cern.ch/sw/lcg/contrib/gcc/4.7/x86_64-slc6/bin/g++
