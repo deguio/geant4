@@ -59,10 +59,10 @@ def main():
 
     if  'lxpl' not in os.environ["HOSTNAME"]:
     # Copy the per-job Geant4 macro to /cmake
-        shutil.copyfile( runJobStr, '/shome/micheli/geant4/EEShashlikSimulation/H4OpticalSmall_'+setup+'/cmake/runJob_'+energy+'_'+setup+'.mac' )
+        shutil.copyfile( runJobStr, os.environ["HOME"]+'/geant4/EEShashlikSimulation/H4OpticalSmall_'+setup+'/cmake/runJob_'+energy+'_'+setup+'.mac' )
     # Set the directories for stdout and for the out.root files
-        stddir = '/shome/micheli/geant4/jobs/stdout/'+energy+'_'+setup+"/"
-        outdir = '/shome/micheli/geant4/jobs/output/'+energy+'_'+setup+"/"
+        stddir = os.environ["HOME"]+'/geant4/jobs/stdout/'+energy+'_'+setup+"/"
+        outdir = os.environ["HOME"]+'/geant4/jobs/output/'+energy+'_'+setup+"/"
 
     else:
         shutil.copyfile( runJobStr, '/afs/cern.ch/work/m/micheli/geant4_new/EEShashlikSimulation/H4OpticalSmall_'+setup+'/cmake/runJob_'+energy+'_'+setup+'.mac' )
