@@ -23,7 +23,9 @@ echo $SETUP
 
 
 # Job specific
-export JOB_OUTDIR=$TMPDIR/
+export JOB_OUTDIR=$TMPDIR
+
+source /afs/cern.ch/sw/lcg/external/gcc/4.7/x86_64-slc6-gcc47-opt/setup.sh
 
 # Attempt to run
 cd /afs/cern.ch/work/m/micheli/geant4_new/EEShashlikSimulation/H4OpticalSmall_$SETUP/cmake
@@ -35,5 +37,5 @@ export SHOME_OUTDIR=/afs/cern.ch/work/m/micheli/geant4_new/jobs/output/$ENERGY/$
 echo $HOME_OUTDIR
 ls
 mkdir -p $SHOME_OUTDIR
-cp -v $JOB_OUTDIR/out.root $SHOME_OUTDIR/out.root
+cp -v ./runEEShashlik.root $SHOME_OUTDIR/out.root
 

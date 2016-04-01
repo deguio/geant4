@@ -25,9 +25,10 @@ def main():
 
     # Energy string
 #    energy = "200GeV"
-#    energy = "100GeV"
+    energy = "100GeV"
 #    energy = "50GeV"
-    energy = "20GeV"
+#    energy = "20GeV"
+#    energy = "1MeV"
 
     # Setup string
     setup = "simpler"
@@ -44,7 +45,7 @@ def main():
     print os.environ["HOSTNAME"]
     if  'lxpl' in os.environ["HOSTNAME"]: 
         subcmd = 'bsub'
-        queue = '8nh'   
+        queue = '1nd'   
 
 
     # Get number of events per run
