@@ -32,7 +32,7 @@
 #include "TF1.h"
 #include "TGraphErrors.h"
 #include "TString.h"
-
+#include "TProfile.h"
 
 #include "RooDataHist.h"
 #include "RooRealVar.h"
@@ -65,6 +65,8 @@ public :
    Int_t           fCurrent; //!current Tree number in a TChain
 
    std::map<TString,TH1F*> histos_;
+   std::map<TString,TH2F*> histos2D_;
+
    TString outDir_;
    std::string energy_;
    std::string setup_;
@@ -138,6 +140,7 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    void addHisto(TString name, int nBins, float XLow, float XUp,TString XLabel);
+   void addHisto2D(TString name, int nBinsX, float XLow, float XUp,TString XLabel,int nBinsY, float YLow, float YUp,TString YLabel);
    void createHistos();
    void drawHistos();
    void fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr);

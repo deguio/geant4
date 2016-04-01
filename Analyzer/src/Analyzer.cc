@@ -12,6 +12,15 @@ void Analyzer::addHisto(TString name, int nBins, float XLow, float XUp, TString 
   histos_[name]=histo;
 }
 
+void Analyzer::addHisto2D(TString name, int nBinsX, float XLow, float XUp,TString XLabel,int nBinsY, float YLow, float YUp,TString YLabel){
+  TH2F* histo = new TH2F(name,name,nBinsX,XLow,XUp,nBinsY,YLow,YUp);
+  histo->GetXaxis()->SetTitle(XLabel);
+  histo->GetYaxis()->SetTitle(YLabel);
+  histos2D_[name]=histo;
+}
+
+
+
 void Analyzer::drawHistos(){
 
 
@@ -22,6 +31,18 @@ void Analyzer::drawHistos(){
      c1.SaveAs(outDir_+it->first+".png");
      c1.SaveAs(outDir_+it->first+".pdf");
      it->second->Write();
+     c1.Clear();
+   }
+
+   for(std::map<TString,TH2F*>::const_iterator it2D = histos2D_.begin();it2D!=histos2D_.end(); it2D++){
+     it2D->second->Draw("colz");
+     TProfile* prof =  it2D->second->ProfileX("prof");
+     prof->Draw("same");
+     //     it2D->second->Draw("profXsame");
+     std::cout<<outDir_+it2D->first+".png"<<std::endl;
+     c1.SaveAs(outDir_+it2D->first+".png");
+     c1.SaveAs(outDir_+it2D->first+".pdf");
+     it2D->second->Write();
      c1.Clear();
    }
 
@@ -78,7 +99,11 @@ void Analyzer::createHistos(){
  addHisto("Time_nPhotTiming",100,0,50,"time [ns]"); 
 
  addHisto("time_frac50",300,10,20,"time[ns]");
- addHisto("time_frac50_shaped",400,10,30,"time[ns]");
+ addHisto("time_frac50_shaped",400,10,30,"time [ns]");
+
+ addHisto2D("time_frac50_vs_Z",420,0,420,"Z [mm]",500,10,100,"time [ns]");
+ addHisto2D("time_frac50_vs_Z_fast",420,0,420,"Z [mm]",500,10,30,"time [ns]");
+
 }
 
 
@@ -159,23 +184,32 @@ void Analyzer::Loop(std::string setup, std::string energy)
       histos_["nPhotons"]->Fill(Fibre_0);
 
       for(int j=0;j<Time_deposit->size();++j){
-	histos_["timeArrival"]->Fill(Time_deposit->at(j));
-	histos_["ZTimeArrival"]->Fill(Z_deposit->at(j));
-	histos_["processTimeArrival"]->Fill(Process_deposit->at(j));
-	if(jentry<10)	histos_["waveform_total"]->Fill(Time_deposit->at(j));
-	wave->Fill(Time_deposit->at(j));
-	if(Process_deposit->at(j)==1){
-	histos_["timeArrival_wls"]->Fill(Time_deposit->at(j));
-	histos_["ZTimeArrival_wls"]->Fill(Z_deposit->at(j));
-	if(jentry<10)	histos_["waveform_wls"]->Fill(Time_deposit->at(j));
-	}else if(Process_deposit->at(j)==2){
-	histos_["timeArrival_scint"]->Fill(Time_deposit->at(j));
-	histos_["ZTimeArrival_scint"]->Fill(Z_deposit->at(j));
-	if(jentry<10)	histos_["waveform_scint"]->Fill(Time_deposit->at(j));
-	}else  if(Process_deposit->at(j)==3){
-	histos_["timeArrival_cher"]->Fill(Time_deposit->at(j));
-	histos_["ZTimeArrival_cher"]->Fill(Z_deposit->at(j));
-	if(jentry<10)	histos_["waveform_cher"]->Fill(Time_deposit->at(j));
+
+	float time = Time_deposit->at(j);
+	int process = Process_deposit->at(j); 
+	int Z = Z_deposit->at(j); 
+	
+
+	histos2D_["time_frac50_vs_Z"]->Fill(Z,time);
+	histos2D_["time_frac50_vs_Z_fast"]->Fill(Z,time);
+
+	histos_["timeArrival"]->Fill(time);
+	histos_["ZTimeArrival"]->Fill(Z);
+	histos_["processTimeArrival"]->Fill(process);
+	if(jentry<10)	histos_["waveform_total"]->Fill(time);
+	wave->Fill(time);
+	if(process==1){
+	histos_["timeArrival_wls"]->Fill(time);
+	histos_["ZTimeArrival_wls"]->Fill(Z);
+	if(jentry<10)	histos_["waveform_wls"]->Fill(time);
+	}else if(process==2){
+	histos_["timeArrival_scint"]->Fill(time);
+	histos_["ZTimeArrival_scint"]->Fill(Z);
+	if(jentry<10)	histos_["waveform_scint"]->Fill(time);
+	}else  if(process==3){
+	histos_["timeArrival_cher"]->Fill(time);
+	histos_["ZTimeArrival_cher"]->Fill(Z);
+	if(jentry<10)	histos_["waveform_cher"]->Fill(time);
 	}
       }
 
@@ -193,8 +227,9 @@ void Analyzer::Loop(std::string setup, std::string energy)
       Waveform* waveF = new Waveform(wave->GetNbinsX(),waveGraph->GetX(),waveGraph->GetY());
       Waveform::max_amplitude_informations wave_max_bare = waveF->max_amplitude(4,100,3);
 
+      float time_frac50 = waveF->time_at_frac(0,100,0.5,wave_max_bare,3);
 
-      histos_["time_frac50"]->Fill(waveF->time_at_frac(0,100,0.5,wave_max_bare,3));
+      histos_["time_frac50"]->Fill(time_frac50);
 
       
 
@@ -238,7 +273,9 @@ void Analyzer::Loop(std::string setup, std::string energy)
 	Waveform* waveF_shaped = new Waveform(200,waveGraph_shaped->GetX(),waveGraph_shaped->GetY());
 	Waveform::max_amplitude_informations wave_max_bare_shaped = waveF_shaped->max_amplitude(4,100,3);
 
+
 	histos_["time_frac50_shaped"]->Fill(waveF_shaped->time_at_frac(0,100,0.5,wave_max_bare_shaped,3));
+
 
       }
 
