@@ -24,10 +24,10 @@ def main():
     n_jobs = 1
 
     # Energy string
-    energy = "200GeV"
+#    energy = "200GeV"
 #    energy = "100GeV"
 #    energy = "50GeV"
-#    energy = "20GeV"
+    energy = "20GeV"
 
     # Setup string
     setup = "simpler"
@@ -108,11 +108,11 @@ def main():
                 ]
 
 
-            print cmd
+        print cmd
         
         #subprocess.call( cmd , stdout=open(os.devnull, 'wb') )
-            subprocess.call(cmd)
-            time.sleep(3)
+        subprocess.call(cmd)
+        time.sleep(2)
 
 
     with open( 'timelog.txt', 'a' ) as timelog:
