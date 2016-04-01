@@ -21,7 +21,7 @@ import time
 
 def main():
 
-    n_jobs = 1
+    n_jobs = 100
 
     # Energy string
 #    energy = "200GeV"
