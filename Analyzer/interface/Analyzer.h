@@ -73,7 +73,10 @@ public :
 
    TVectorD* meanValueTime;
    TVectorD* meanValueTimeErr;
-	   
+
+   TVectorD* resValueEnergy;
+   TVectorD* resValueEnergyErr;
+
    TVectorD* resValueTime;
    TVectorD* resValueTimeErr;
 
@@ -143,7 +146,7 @@ public :
    void addHisto2D(TString name, int nBinsX, float XLow, float XUp,TString XLabel,int nBinsY, float YLow, float YUp,TString YLabel);
    void createHistos();
    void drawHistos();
-   void fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr);
+   void fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEnergy=false);
    template <typename T>  std::vector<size_t> sort_indexes(const std::vector<T> &v);
 };
 
@@ -202,6 +205,9 @@ void Analyzer::Init(TTree *tree)
 
   meanValueTime = new TVectorD(1);
   meanValueTimeErr = new TVectorD(1);
+
+  resValueEnergy = new TVectorD(1);
+  resValueEnergyErr = new TVectorD(1);
 
   resValueTime = new TVectorD(1);
   resValueTimeErr = new TVectorD(1);

@@ -26,8 +26,9 @@ void Analyzer::drawHistos(){
 
   TCanvas c1;
    for(std::map<TString,TH1F*>::const_iterator it = histos_.begin();it!=histos_.end(); it++){
-     it->second->Draw();
      std::cout<<outDir_+it->first+".png"<<std::endl;
+     it->second->Draw();
+
      c1.SaveAs(outDir_+it->first+".png");
      c1.SaveAs(outDir_+it->first+".pdf");
      it->second->Write();
@@ -55,7 +56,7 @@ void Analyzer::createHistos(){
   addHisto("ZTimeArrival_avg",420,0,420,"Z [mm]");
   addHisto("processTimeArrival_avg",3,0.5,3.5,"process");
  
-  addHisto("nPhotons",200,0,1000,"WLS Photons");
+  addHisto("nPhotons",1000,0,50000,"WLS Photons");
 
   if(setup_=="SingleFibre")   addHisto("timeArrival_avg_wls",500,5,10,"time [ns]");
   else   addHisto("timeArrival_avg_wls",500,10,20,"time [ns]");
@@ -94,12 +95,16 @@ void Analyzer::createHistos(){
  addHisto("time_at_max",100,0,50,"time [ns]");
 
  addHisto("Z_nPhotTiming",420,0,420,"Z [mm]");
+ addHisto("Z_nPhotTimingNorm",420,0,420,"Z [mm]");
  addHisto("Z_firstPhotons",420,0,420,"Z [mm]");
+ addHisto("Z_firstPhotonsNorm",420,0,420,"Z [mm]");
  addHisto("Process_nPhotTiming",3,0.5,3.5,"process"); 
  addHisto("Time_nPhotTiming",100,0,50,"time [ns]"); 
 
  addHisto("time_frac50",300,10,20,"time[ns]");
  addHisto("time_frac50_shaped",400,10,30,"time [ns]");
+
+
 
  addHisto2D("time_frac50_vs_Z",420,0,420,"Z [mm]",500,10,100,"time [ns]");
  addHisto2D("time_frac50_vs_Z_fast",420,0,420,"Z [mm]",500,10,30,"time [ns]");
@@ -346,8 +351,19 @@ void Analyzer::Loop(std::string setup, std::string energy)
    }
 
 
+   histos_["Z_nPhotTimingNorm"] = (TH1F*)histos_["Z_nPhotTiming"]->Clone();
+   histos_["ZTimeArrival"]->Print();
+   TH1F* dummy=(TH1F*)histos_["ZTimeArrival"]->Clone();
+   histos_["Z_nPhotTimingNorm"] -> Divide(dummy);
+
+   histos_["Z_firstPhotonsNorm"] = (TH1F*)histos_["Z_firstPhotons"]->Clone();
+   histos_["Z_firstPhotonsNorm"] -> Divide(dummy);
+
+
+
    fitHisto(histos_["timeArrival_avg"],resValueTime,resValueTimeErr);
    fitHisto(histos_["time_frac50"],resValueTime_frac50,resValueTimeErr_frac50);
+   fitHisto(histos_["nPhotons"],resValueEnergy,resValueEnergyErr,true);
    if(DOSHAPING)    fitHisto(histos_["time_frac50_shaped"],resValueTime_frac50_shaped,resValueTimeErr_frac50_shaped);
    drawHistos();
 
@@ -381,7 +397,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
 }
 
 
-void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr){
+void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEnergy){
 //-----------------fit with cruijff ------------------------
   double peakpos = histo->GetBinCenter(histo->GetMaximumBin());
   double sigma = histo->GetRMS();
@@ -409,7 +425,8 @@ void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr){
   fit_fct.fitTo(data);
   
   frame = x.frame("Title");
-  frame->SetXTitle("time [ns]");
+  if(!isEnergy)  frame->SetXTitle("time [ns]");
+  else frame->SetXTitle("nPhotons");
   std::string ytitle = Form("Events");
   frame->SetYTitle(ytitle.c_str());
   
@@ -426,14 +443,29 @@ void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr){
   TLegend* lego = new TLegend(0.57, 0.75, 0.89, 0.9); 
   lego->SetTextAlign(32);
   lego->SetTextSize(0.036);
-  lego->AddEntry(  (TObject*)0 ,Form("#mu = %.0f #pm %.0f ps", meanr.getVal()*1.e3, meanr.getError()*1.e3), "");
-  lego->AddEntry(  (TObject*)0 ,Form("#sigma = %.0f #pm %.0f ps", rms*1.e3, rmsErr*1.e3), "");
+  if(!isEnergy){
+    lego->AddEntry(  (TObject*)0 ,Form("#mu = %.0f #pm %.0f ps", meanr.getVal()*1.e3, meanr.getError()*1.e3), "");
+    lego->AddEntry(  (TObject*)0 ,Form("#sigma = %.0f #pm %.0f ps", rms*1.e3, rmsErr*1.e3), "");
 
-  meanValueTime[0]=meanr.getVal()*1.e3;
-  meanValueTimeErr[0]=meanr.getError()*1.e3;
+    meanValueTime[0]=meanr.getVal()*1.e3;
+    meanValueTimeErr[0]=meanr.getError()*1.e3;
+    
+    res[0]=rms*1.e3;
+    resErr[0]=rmsErr*1.e3;
 
-  res[0]=rms*1.e3;
-  resErr[0]=rmsErr*1.e3;
+  }else{
+    lego->AddEntry(  (TObject*)0 ,Form("#mu = %.0f #pm %.0f ps", meanr.getVal(), meanr.getError()), "");
+    lego->AddEntry(  (TObject*)0 ,Form("#sigma = %.0f #pm %.0f ps", rms, rmsErr), "");
+
+    meanValueTime[0]=meanr.getVal();
+    meanValueTimeErr[0]=meanr.getError();
+    
+    res[0]=rms;
+    resErr[0]=rmsErr;
+
+
+  }
+
 
 
   lego->SetFillColor(0);
