@@ -27,6 +27,7 @@ class CreateTree
   std::vector<float> Time_deposit;
   std::vector<float> Z_deposit;
   std::vector<float> Process_deposit;//1 is WLS, 2 Scintillation, 3 Cerenkov
+  std::vector<float> Theta_deposit;
   std::vector<float> opPhoton_time;
   std::vector<int> opPhoton_process;
   float  Eabs;

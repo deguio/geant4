@@ -90,7 +90,8 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
       
       G4int copyNo = theTouchable->GetCopyNumber();
       G4int motherCopyNo = theTouchable->GetCopyNumber(1);
-      
+
+
 
 
       //FUCK IT Let's just kill them before they bounce that much...
@@ -176,6 +177,7 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 	CreateTree::Instance() -> Time_deposit.push_back(theTrack->GetGlobalTime()/nanosecond);
 	G4ThreeVector directionStart=theTrack->GetVertexPosition();//position at start point
 	CreateTree::Instance() -> Z_deposit.push_back(directionStart.z()/mm);
+	CreateTree::Instance() -> Theta_deposit.push_back(directionStart.theta());
 	if(processName=="OpWLS"){
 	  CreateTree::Instance() -> Process_deposit.push_back(1);
 	}else if(processName=="Scintillation"){
