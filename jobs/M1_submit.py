@@ -46,6 +46,7 @@ def main():
     if  'lxpl' in os.environ["HOSTNAME"]: 
         subcmd = 'bsub'
         queue = '1nd'   
+#        queue = 'cmscaf1nh'   
 
 
     # Get number of events per run
@@ -105,7 +106,7 @@ def main():
                 '-J', JOBNAME,
 #                '-v', 'ENERGY='+energy,
 #                '-v', 'SETUP='+setup,
-                'jobscript_lxplus.sh '+energy+" "+setup
+                'jobscript_lxplus.sh '+energy+" "+setup+" "+JOBNAME,
                 ]
 
 

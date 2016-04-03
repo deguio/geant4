@@ -154,6 +154,10 @@ int main(int argc,char** argv)
     G4String JOBOUTDIR = std::getenv("JOB_OUTDIR");
     filename = JOBOUTDIR + "out.root";
     }
+  else if(std::getenv("JOBNAME") ){//for lxpl
+    G4String JOBOUTDIR = std::getenv("JOB_OUTDIR");
+    filename = JOBOUTDIR + "/out.root";
+    }
   else filename = "runEEShashlik.root";
   // Else, just store as it as the default output file
 

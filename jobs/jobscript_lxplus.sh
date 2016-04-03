@@ -2,12 +2,16 @@ echo "Trying to run the EEShashlik code"
 
 export ENERGY=$1
 export SETUP=$2
+export JOBNAME=$3
 
 echo "energy:"
 echo $ENERGY
 echo "setup:"
 echo $SETUP
 
+
+export SHOME_OUTDIR=/afs/cern.ch/work/m/micheli/geant4_new/jobs/output/$1/$2/$3/
+echo $SHOME_OUTDIR
 
 #export SCRAM_ARCH=slc6_amd64_gcc481
 #source /swshare/psit3/etc/profile.d/cms_ui_env.sh
@@ -33,9 +37,9 @@ source ../setup_g4.sh
 ./runEEShashlik -m runJob_$ENERGY"_"$SETUP.mac 
 
 # Copy out.root to shome
-export SHOME_OUTDIR=/afs/cern.ch/work/m/micheli/geant4_new/jobs/output/$ENERGY/$SETUP/$JOB_NAME/
-echo $HOME_OUTDIR
-ls
+
+echo $SHOME_OUTDIR
+ls -l
 mkdir -p $SHOME_OUTDIR
-cp -v ./runEEShashlik.root $SHOME_OUTDIR/out.root
+cp -v $JOB_OUTDIR/out.root $SHOME_OUTDIR/out.root
 
