@@ -71,8 +71,8 @@ public :
    std::string energy_;
    std::string setup_;
 
-   TVectorD* meanValueTime;
-   TVectorD* meanValueTimeErr;
+   TVectorD* meanValueEnergy;
+   TVectorD* meanValueEnergyErr;
 
    TVectorD* resValueEnergy;
    TVectorD* resValueEnergyErr;
@@ -203,8 +203,8 @@ void Analyzer::Init(TTree *tree)
    // Init() will be called many times when running on PROOF
    // (once per file to be processed).
 
-  meanValueTime = new TVectorD(1);
-  meanValueTimeErr = new TVectorD(1);
+  meanValueEnergy = new TVectorD(1);
+  meanValueEnergyErr = new TVectorD(1);
 
   resValueEnergy = new TVectorD(1);
   resValueEnergyErr = new TVectorD(1);

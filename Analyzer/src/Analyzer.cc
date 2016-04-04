@@ -3,7 +3,8 @@
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
-#define DOSHAPING 0
+#define DOSHAPING 1
+#define LIMIT_NENTRIES 1
 
 void Analyzer::addHisto(TString name, int nBins, float XLow, float XUp, TString XLabel){
 
@@ -114,8 +115,8 @@ void Analyzer::createHistos(){
 
 void Analyzer::Loop(std::string setup, std::string energy)
 {
-  gROOT->ProcessLine("gPrintViaErrorHandler = kTRUE");
-  gROOT->ProcessLine("gErrorIgnoreLevel = 6000");
+  //  gROOT->ProcessLine("gPrintViaErrorHandler = kTRUE");
+  //  gROOT->ProcessLine("gErrorIgnoreLevel = 6000");
 
 //   In a ROOT session, you can do:
 //      Root > .L Analyzer.C
@@ -144,13 +145,16 @@ void Analyzer::Loop(std::string setup, std::string energy)
 
 
    Long64_t nentries = fChain->GetEntries();
-   //   nentries = 10;
+   if(LIMIT_NENTRIES)   nentries = 200;
    energy_=energy;
    setup_=setup;
 
    outDir_="outFiles/plots/"+energy+"/"+setup+"/";
+   if(LIMIT_NENTRIES)outDir_+="test/";
    system(Form("mkdir -p %s", outDir_.Data()));
-   TString fileName = "outFiles/plotterTiming_"+setup+"_"+energy+".root";
+   TString fileName = "outFiles/plotterTiming_"+setup+"_"+energy;
+   if(LIMIT_NENTRIES)fileName+="_test_";
+   fileName+=".root";
 
   TFile* outFile = TFile::Open(fileName,"recreate");
 
@@ -378,8 +382,11 @@ void Analyzer::Loop(std::string setup, std::string energy)
    wave_canvas.SaveAs(outDir_+"waveform.png");
    wave_canvas.SaveAs(outDir_+"waveform.pdf");
 
-   meanValueTime->Write("meanValueTime");
-   meanValueTimeErr->Write("meanValueTimeErr");
+   meanValueEnergy->Write("meanValueEnergy");
+   meanValueEnergyErr->Write("meanValueEnergyErr");
+
+   resValueEnergy->Write("resValueEnergy");
+   resValueEnergyErr->Write("resValueEnergyErr");
 
    resValueTime->Write("resValueTime");
    resValueTimeErr->Write("resValueTimeErr");
@@ -447,9 +454,6 @@ void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEner
     lego->AddEntry(  (TObject*)0 ,Form("#mu = %.0f #pm %.0f ps", meanr.getVal()*1.e3, meanr.getError()*1.e3), "");
     lego->AddEntry(  (TObject*)0 ,Form("#sigma = %.0f #pm %.0f ps", rms*1.e3, rmsErr*1.e3), "");
 
-    meanValueTime[0]=meanr.getVal()*1.e3;
-    meanValueTimeErr[0]=meanr.getError()*1.e3;
-    
     res[0]=rms*1.e3;
     resErr[0]=rmsErr*1.e3;
 
@@ -457,8 +461,8 @@ void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEner
     lego->AddEntry(  (TObject*)0 ,Form("#mu = %.0f #pm %.0f ps", meanr.getVal(), meanr.getError()), "");
     lego->AddEntry(  (TObject*)0 ,Form("#sigma = %.0f #pm %.0f ps", rms, rmsErr), "");
 
-    meanValueTime[0]=meanr.getVal();
-    meanValueTimeErr[0]=meanr.getError();
+    meanValueEnergy[0]=meanr.getVal();
+    meanValueEnergyErr[0]=meanr.getError();
     
     res[0]=rms;
     resErr[0]=rmsErr;
