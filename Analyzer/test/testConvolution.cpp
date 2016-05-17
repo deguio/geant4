@@ -140,6 +140,7 @@ int main( int argc, char* argv[] ) {
   for(int i=0;i<1056;++i)  {
     //  histX->setBin(i);   
     //    std::cout<<"histX"<<histX->getBinning().binCenter(i)<<" ";
+    std::cout<<"histX"<<t.getBinning().binNumber(0);
     t.setBin(i);   
     std::cout<<" -----histpdf1: "<<i<<" "<<histpdf1.getVal(wave.get())<<std::endl;
   }

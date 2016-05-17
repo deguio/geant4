@@ -43,7 +43,7 @@ WaveformNew* FFTConvolution::fftConvolute(WaveformNew*  wave1,WaveformNew*  wave
   int N=wave1->_samples.size();//n samples of original waveform
   assert(N == wave2->_samples.size());
 
-  int NBuf=(N*bufferFraction())/2+0.5;//number of buffer samples needed for fft
+  int NBuf=static_cast<int>((N*bufferFraction())/2+0.5);//number of buffer samples needed for fft
   int N2=N+2*NBuf;//number of samples + buffer zones
 
   int zeroBin1,zeroBin2;
@@ -88,8 +88,7 @@ WaveformNew* FFTConvolution::fftConvolute(WaveformNew*  wave1,WaveformNew*  wave
     Int_t j = i + totalShift ;
     while (j<0) j+= N2 ;
     while (j>=N2) j-= N2 ;
-    convolutedWave->addSample(fftc2r->GetPointReal(j),0.2);
-    
+    convolutedWave->addSample(fftc2r->GetPointReal(j),0.2);//FIXME do dynamic
   }
 
 
@@ -105,16 +104,19 @@ Double_t* FFTConvolution::sampleWaveform(WaveformNew*  wave, int N,int NBuf,int 
 
   // Allocate array of sampling size plus optional buffer zones
   Double_t* array = new Double_t[N2] ;
+
+  zeroBin=0;
   
   // Find bin ID that contains zero value
-  zeroBin = 0 ;
   for(int i=0;i<N;i++){
-    if(wave->_samples[i]<=0)zeroBin++;
+    if(wave->_times[i]<0)zeroBin++; 
     else break;
   }
   
-  int binShift = int(N2/wave->_samples.size());
-  zeroBin+=binShift;
+
+  //  int binShift = int(N2/(wave->_times[N-1]-wave->_times[0]));
+  //  zeroBin+=binShift;
+  zeroBin+=NBuf-1;
   
   while(zeroBin>=N2) zeroBin-= N2 ;
   while(zeroBin<0) zeroBin+= N2 ;
@@ -129,12 +131,8 @@ Double_t* FFTConvolution::sampleWaveform(WaveformNew*  wave, int N,int NBuf,int 
   case Extend:
     // Sample entire extended range (N2 samples)
     for (k=0 ; k<N2 ; k++) {
-      std::cout<<k<<" tmp samples"<<tmp[k]<<" "<<wave->_samples[k]<<std::endl;
       if (k<N)      tmp[k]= wave->_samples[k];
       else tmp[k]=0;
-      //	  if(k<nbuf)tmp[k] = wave->_samples[zeroBin];
-      //	  else if (k<n)   tmp[k] = wave->_samples[k];
-      //	  else tmp[k]=wave->_samples[n-1];//FIXME
     }  
     break;
 
