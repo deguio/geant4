@@ -3,8 +3,8 @@
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
-#define DOSHAPING 1
-#define LIMIT_NENTRIES 1
+#define DOSHAPING 0
+#define LIMIT_NENTRIES 0
 
 void Analyzer::addHisto(TString name, int nBins, float XLow, float XUp, TString XLabel){
 
@@ -52,39 +52,39 @@ void Analyzer::drawHistos(){
 }
 
 void Analyzer::createHistos(){
-  if(setup_=="SingleFibre")  addHisto("timeArrival_avg",500,5,10,"time [ns]");
+  if(setup_=="SingleFibre" || setup_=="Ideal2016")  addHisto("timeArrival_avg",500,5,10,"time [ns]");
   else addHisto("timeArrival_avg",500,10,20,"time [ns]");
   addHisto("ZTimeArrival_avg",420,0,420,"Z [mm]");
   addHisto("processTimeArrival_avg",3,0.5,3.5,"process");
  
   addHisto("nPhotons",1000,0,50000,"WLS Photons");
 
-  if(setup_=="SingleFibre")   addHisto("timeArrival_avg_wls",500,5,10,"time [ns]");
+  if(setup_=="SingleFibre" || setup_=="Ideal2016")   addHisto("timeArrival_avg_wls",500,5,10,"time [ns]");
   else   addHisto("timeArrival_avg_wls",500,10,20,"time [ns]");
   addHisto("ZTimeArrival_avg_wls",420,0,420,"Z [mm]");
   
-  if(setup_=="SingleFibre")   addHisto("timeArrival_avg_scint",500,5,10,"time [ns]");
+  if(setup_=="SingleFibre" || setup_=="Ideal2016")   addHisto("timeArrival_avg_scint",500,5,10,"time [ns]");
   else   addHisto("timeArrival_avg_scint",500,10,20,"time [ns]");
   addHisto("ZTimeArrival_avg_scint",420,0,420,"Z [mm]");
   
-  if(setup_=="SingleFibre")   addHisto("timeArrival_avg_cher",500,5,10,"time [ns]");
+  if(setup_=="SingleFibre" || setup_=="Ideal2016")   addHisto("timeArrival_avg_cher",500,5,10,"time [ns]");
   else   addHisto("timeArrival_avg_cher",500,10,20,"time [ns]");
   addHisto("ZTimeArrival_avg_cher",420,0,420,"Z [mm]");
 
-  if(setup_=="SingleFibre")   addHisto("timeArrival",500,5,10,"time [ns]");
-  else   addHisto("timeArrival",500,10,200,"time [ns]");
+  if(setup_=="SingleFibre" || setup_=="Ideal2016")   addHisto("timeArrival",500,5,10,"time [ns]");
+  else   addHisto("timeArrival",1024,0,200,"time [ns]");
   addHisto("ZTimeArrival",420,0,420,"Z [mm]");
   addHisto("processTimeArrival",3,0.5,3.5,"process");
 
-  if(setup_=="SingleFibre")   addHisto("timeArrival_scint",500,5,10,"time [ns]");
+  if(setup_=="SingleFibre" || setup_=="Ideal2016")   addHisto("timeArrival_scint",500,5,10,"time [ns]");
   else   addHisto("timeArrival_scint",500,10,20,"time [ns]");
   addHisto("ZTimeArrival_scint",420,0,420,"Z [mm]");
 
-  if(setup_=="SingleFibre")   addHisto("timeArrival_cher",500,5,10,"time [ns]");
+  if(setup_=="SingleFibre" || setup_=="Ideal2016")   addHisto("timeArrival_cher",500,5,10,"time [ns]");
   else   addHisto("timeArrival_cher",500,10,20,"time [ns]");
   addHisto("ZTimeArrival_cher",420,0,420,"Z [mm]");
 
-  if(setup_=="SingleFibre")   addHisto("timeArrival_wls",500,5,10,"time [ns]");
+  if(setup_=="SingleFibre" || setup_=="Ideal2016")   addHisto("timeArrival_wls",500,5,10,"time [ns]");
   else   addHisto("timeArrival_wls",500,10,20,"time [ns]");
   addHisto("ZTimeArrival_wls",420,0,420,"Z [mm]");
 
@@ -105,10 +105,10 @@ void Analyzer::createHistos(){
  addHisto("time_frac50",300,10,20,"time[ns]");
  addHisto("time_frac50_shaped",400,10,30,"time [ns]");
 
-
-
  addHisto2D("time_frac50_vs_Z",420,0,420,"Z [mm]",500,10,100,"time [ns]");
  addHisto2D("time_frac50_vs_Z_fast",420,0,420,"Z [mm]",500,10,30,"time [ns]");
+
+ addHisto("EactLYScaled",100,37000,47000,"E [GeV]");
 
 }
 
@@ -143,9 +143,21 @@ void Analyzer::Loop(std::string setup, std::string energy)
 //by  b_branchname->GetEntry(ientry); //read only this branch
    if (fChain == 0) return;
 
+   std::vector<float> LY =createLY(12);
+   TRandom3 gausGen;
+   for(int i=0;i<LY.size();++i){
+     LY[i]*= gausGen.Gaus(1,0.04);
+     std::cout<<gausGen.Gaus(1,0.04);
+   }
+
+         std::sort(LY.begin(),LY.end());
+            std::reverse(LY.begin(),LY.end());
+
+   //      std::random_shuffle(LY.begin(),LY.end());
+   //      std::random_shuffle(LY.begin(),LY.end());
 
    Long64_t nentries = fChain->GetEntries();
-   if(LIMIT_NENTRIES)   nentries = 200;
+   if(LIMIT_NENTRIES)   nentries = 400;
    energy_=energy;
    setup_=setup;
 
@@ -188,6 +200,15 @@ void Analyzer::Loop(std::string setup, std::string energy)
       int nPhotTiming_scint=0;
       int nPhotTiming_cher=0;
 
+      float EactTotal=0;
+
+      for(int i=0;i<nLayers;++i){
+	//	EactTotal += Eact_layer->at(i)*LY[i];   //FIXMEE
+	//	std::cout<<Eact_layer->at(i)<<" "<<LY[i]<<std::endl;
+      }
+      //      std::cout<<EactTotal<<std::endl;
+
+      histos_["EactLYScaled"]->Fill(EactTotal);
 
 
       histos_["nPhotons"]->Fill(Fibre_0);
@@ -229,7 +250,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
 
       //shaping of photodetectors
 
-      wave->Sumw2();
+      //      wave->Sumw2();
       wave->Scale(1./wave->Integral());//even if for our porposes it's not important pdfs should be normalized to avoid troubles in convolution
 
       TGraph* waveGraph = new TGraph(wave);
@@ -301,7 +322,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
 	  wave->Reset();	
 
 
-      if(setup_=="SingleFibre")         nPhotTiming=(int)(Time_deposit->size()*0.01);
+      if(setup_=="SingleFibre" || setup_=="Ideal2016")         nPhotTiming=(int)(Time_deposit->size()*0.01);
       else nPhotTiming=(int)(Time_deposit->size()*0.01);
       //      std::cout<<nPhotTiming<<std::endl;
 
@@ -367,7 +388,8 @@ void Analyzer::Loop(std::string setup, std::string energy)
 
    fitHisto(histos_["timeArrival_avg"],resValueTime,resValueTimeErr);
    fitHisto(histos_["time_frac50"],resValueTime_frac50,resValueTimeErr_frac50);
-   fitHisto(histos_["nPhotons"],resValueEnergy,resValueEnergyErr,true);
+   fitHisto(histos_["nPhotons"],resValueEnergy,resValueEnergyErr,true,meanValueEnergy,meanValueEnergyErr);
+   fitHisto(histos_["EactLYScaled"],resValueEactLYScaled,resValueEactLYScaledErr,true,meanValueEactLYScaled,meanValueEactLYScaledErr);
    if(DOSHAPING)    fitHisto(histos_["time_frac50_shaped"],resValueTime_frac50_shaped,resValueTimeErr_frac50_shaped);
    drawHistos();
 
@@ -388,12 +410,19 @@ void Analyzer::Loop(std::string setup, std::string energy)
    resValueEnergy->Write("resValueEnergy");
    resValueEnergyErr->Write("resValueEnergyErr");
 
+   meanValueEactLYScaled->Write("meanValueEactLYScaled");
+   meanValueEactLYScaledErr->Write("meanValueEactLYScaledErr");
+
+   resValueEactLYScaled->Write("resValueEactLYScaled");
+   resValueEactLYScaledErr->Write("resValueEactLYScaledErr");
+
+
    resValueTime->Write("resValueTime");
    resValueTimeErr->Write("resValueTimeErr");
 
    resValueTime_frac50->Write("resValueTime_frac50");
    resValueTimeErr_frac50->Write("resValueTimeErr_frac50");
-
+   
    resValueTime_frac50_shaped->Write("resValueTime_frac50_shaped");
    resValueTimeErr_frac50_shaped->Write("resValueTimeErr_frac50_shaped");
 
@@ -404,7 +433,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
 }
 
 
-void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEnergy){
+void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEnergy,TVectorD* mean, TVectorD* meanErr){
 //-----------------fit with cruijff ------------------------
   double peakpos = histo->GetBinCenter(histo->GetMaximumBin());
   double sigma = histo->GetRMS();
@@ -433,7 +462,9 @@ void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEner
   
   frame = x.frame("Title");
   if(!isEnergy)  frame->SetXTitle("time [ns]");
+  else if(setup_=="Ideal2016")frame->SetXTitle("Energy [MeV]");
   else frame->SetXTitle("nPhotons");
+
   std::string ytitle = Form("Events");
   frame->SetYTitle(ytitle.c_str());
   
@@ -461,8 +492,8 @@ void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEner
     lego->AddEntry(  (TObject*)0 ,Form("#mu = %.0f #pm %.0f ps", meanr.getVal(), meanr.getError()), "");
     lego->AddEntry(  (TObject*)0 ,Form("#sigma = %.0f #pm %.0f ps", rms, rmsErr), "");
 
-    meanValueEnergy[0]=meanr.getVal();
-    meanValueEnergyErr[0]=meanr.getError();
+    mean[0]=meanr.getVal();
+    meanErr[0]=meanr.getError();
     
     res[0]=rms;
     resErr[0]=rmsErr;
@@ -487,3 +518,37 @@ void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEner
 
 
 
+std::vector<float> Analyzer::createLY(int nLayers){
+  ///FIXME for the moment just quick initialization since in a hurry make it configurable
+
+  std::vector<float> LYvalues;
+
+//  LYvalues.push_back(1.052);
+//  LYvalues.push_back(1.096);
+//  LYvalues.push_back(0.973);
+//  LYvalues.push_back(1.082);
+//  LYvalues.push_back(1.044);
+//  LYvalues.push_back(0.977);
+//  LYvalues.push_back(1.024);
+//  LYvalues.push_back(0.992);
+//  LYvalues.push_back(1.037);
+//  LYvalues.push_back(1.007);
+
+
+
+  LYvalues.push_back(1.029);
+  LYvalues.push_back(0.996);
+  LYvalues.push_back(0.989);
+  LYvalues.push_back(1.040);
+  LYvalues.push_back(1.011);
+  LYvalues.push_back(1.000);
+  LYvalues.push_back(1.016);
+  LYvalues.push_back(1.028);
+  LYvalues.push_back(0.979);
+  LYvalues.push_back(1.021);
+  LYvalues.push_back(1.001);
+  LYvalues.push_back(1.018);
+
+  return LYvalues;
+
+}

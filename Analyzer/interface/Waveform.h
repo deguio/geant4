@@ -5,6 +5,8 @@
 #include "Math/Interpolator.h"
 #include "TVirtualFFT.h"
 
+#include "TH1.h"
+
 #include <vector> 
 #include <algorithm> 
 #include <iostream> 
@@ -23,6 +25,8 @@ class Waveform
 	
   void fft(); // compute the fft
   void inv_fft(int cut,double tau=0.0001); // compute the inverse fft, with a freq cut. Hard.
+  void inv_fft(); // compute the inverse fft, with a freq cut. Hard.
+  void inv_fft_multiply(); // compute the inverse fft, with a freq cut. Hard.
   
   struct max_amplitude_informations
   {
@@ -86,6 +90,13 @@ class Waveform
       if (_interpolator)
 	delete _interpolator;
     };
+
+  //print
+  void print(){
+    for (unsigned int i(0);i<_samples.size();++i){
+      std::cout<<"i:"<<i<<" time:"<<_times[i]<<" samples:"<<_samples[i]<<std::endl;
+    }
+  }
 
   //add samples
   void addSample(const float& sample, float sampleTimeSize=0.2e-9)
@@ -170,6 +181,61 @@ class Waveform
     for (unsigned int i(0);i<_samples.size();++i)
       _samples[i]*=rescale_factor;
   };
+
+  ///multiply two waveforms
+  void multiply(Waveform*  wave)
+  {
+    for (unsigned int i(0);i<_samples.size();++i){
+      //      std::cout<<"[MULTIPLY]:"<<_samples[i]<<std::endl;
+      _samples[i]*=wave->_samples[i];
+      //      std::cout<<"samples:"<<_samples[i]<<" wave:"<<wave->_samples[i]<<std::endl;
+    }
+  };
+
+  ///multiply fft of two waveforms
+  void multiply_fft(Waveform*  wave)//FIXME implement correctly
+  {
+
+    int n=_samples.size();
+    //	TVirtualFFT *vfft =TVirtualFFT::FFT(1,&n,"C2CFORWARD");
+    float bufferFraction=0.10;//buffer for avoiding cyclical flow, default is 10% of window
+    int nbuf=(n*bufferFraction)/2+0.5;
+    int N2=n+2*nbuf;
+    
+    std::cout<<"multiply n:"<<n<<" n2"<<N2<<" nbuf:"<<nbuf<<"fft_size: "<<_fft_re.size()<<std::endl;
+    //    _fft_re.resize(_samples.size());
+    //    _fft_im.resize(_samples.size());
+
+    //    for (unsigned int i(0);i<_samples.size()/2+1;++i){
+    for (unsigned int i(0);i<N2/2+1;++i){
+	_fft_re[i]=_fft_re[i]*wave->_fft_re[i]-_fft_im[i]*wave->_fft_im[i];
+	_fft_im[i]=_fft_re[i]*wave->_fft_im[i]+wave->_fft_re[i]*_fft_im[i];
+//	std::cout<<"real"<<_fft_re[i]<<"wave:"<<wave->_fft_re[i]<<std::endl;
+//	std::cout<<"im"<<_fft_im[i]<<"wave:"<<wave->_fft_im[i]<<std::endl;
+    }
+    _fft_re.resize(N2/2+1);
+    _fft_im.resize(N2/2+1);
+
+  };
+
+  TH1F* get_histo(TString name){
+    TH1F* histo=new TH1F(name,name,_times.size(),_times[0],_times[_samples.size()-1]);
+    for (unsigned int i(0);i<_samples.size();++i){
+      histo->Fill(_times[i],_samples[i]);
+      std::cout<<"[GETHISTO]:"<<i<<" "<<_times[i]<<" "<<_samples[i]<<std::endl;
+    }
+    return histo;
+  }
+
+  TH1F* get_histo_inv_fft(TString name){
+    TH1F* histo=new TH1F(name,name,_times.size()*2,_times[0]*2,_times[_samples.size()-1]*2);
+    for (unsigned int i(0);i<_samples.size();++i){
+      histo->Fill(_times[i],_samples[i]);
+      std::cout<<"[GETHISTO]:"<<i<<" "<<_times[i]<<" "<<_samples[i]<<std::endl;
+    }
+    return histo;
+  }
+
 
   //shift all samples by a given amount in time */
   void shift_time(const float& time_offset)

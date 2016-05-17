@@ -33,6 +33,7 @@
 #include "TGraphErrors.h"
 #include "TString.h"
 #include "TProfile.h"
+#include "TRandom3.h"
 
 #include "RooDataHist.h"
 #include "RooRealVar.h"
@@ -77,6 +78,13 @@ public :
    TVectorD* resValueEnergy;
    TVectorD* resValueEnergyErr;
 
+   TVectorD* meanValueEactLYScaled;
+   TVectorD* meanValueEactLYScaledErr;
+
+   TVectorD* resValueEactLYScaled;
+   TVectorD* resValueEactLYScaledErr;
+
+
    TVectorD* resValueTime;
    TVectorD* resValueTimeErr;
 
@@ -90,6 +98,7 @@ public :
    // Declaration of leaf types
    Int_t           Event;
    std::vector<float>   *Time_deposit;
+   std::vector<float>   *Eact_layer;
    std::vector<float>   *Process_deposit;
    std::vector<float>   *Z_deposit;
    std::vector<float>   *opPhoton_time;
@@ -113,6 +122,7 @@ public :
    // List of branches
    TBranch        *b_Event;   //!
    TBranch        *b_Time_deposit;   //!
+   TBranch        *b_Eact_layer;   //!
    TBranch        *b_Process_deposit;   //!
    TBranch        *b_Z_deposit;   //!
    TBranch        *b_opPhoton_time;   //!
@@ -146,7 +156,8 @@ public :
    void addHisto2D(TString name, int nBinsX, float XLow, float XUp,TString XLabel,int nBinsY, float YLow, float YUp,TString YLabel);
    void createHistos();
    void drawHistos();
-   void fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEnergy=false);
+   void fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEnergy=false,TVectorD* mean=0, TVectorD* meanErr=0);
+   std::vector<float> createLY(int nLayers);
    template <typename T>  std::vector<size_t> sort_indexes(const std::vector<T> &v);
 };
 
@@ -209,6 +220,13 @@ void Analyzer::Init(TTree *tree)
   resValueEnergy = new TVectorD(1);
   resValueEnergyErr = new TVectorD(1);
 
+  meanValueEactLYScaled = new TVectorD(1);
+  meanValueEactLYScaledErr = new TVectorD(1);
+
+  resValueEactLYScaled = new TVectorD(1);
+  resValueEactLYScaledErr = new TVectorD(1);
+
+
   resValueTime = new TVectorD(1);
   resValueTimeErr = new TVectorD(1);
 
@@ -221,6 +239,7 @@ void Analyzer::Init(TTree *tree)
 
    // Set object pointer
    Time_deposit = 0;
+   Eact_layer = 0;
    Process_deposit = 0;
    Z_deposit = 0;
    opPhoton_time = 0;
@@ -233,6 +252,7 @@ void Analyzer::Init(TTree *tree)
 
    fChain->SetBranchAddress("Event", &Event, &b_Event);
    fChain->SetBranchAddress("Time_deposit", &Time_deposit, &b_Time_deposit);
+   fChain->SetBranchAddress("Eact_layer", &Eact_layer, &b_Eact_layer);
    fChain->SetBranchAddress("Process_deposit", &Process_deposit, &b_Process_deposit);
    fChain->SetBranchAddress("Z_deposit", &Z_deposit, &b_Z_deposit);
    fChain->SetBranchAddress("opPhoton_time", &opPhoton_time, &b_opPhoton_time);
