@@ -455,195 +455,70 @@ WaveformNew::baseline_informations WaveformNew::baseline(const int& x1, const in
 
 };
 
+
+
 //compute fft
-void WaveformNew::fft(){
-	int n=_samples.size();
-	//	TVirtualFFT *vfft =TVirtualFFT::FFT(1,&n,"C2CFORWARD");
-	float bufferFraction=0.10;//buffer for avoiding cyclical flow, default is 10% of window
-	int nbuf=(n*bufferFraction)/2+0.5;
-	int N2=n+2*nbuf;
-	std::cout<<"---------------------------n:"<<n<<" nbuf:"<<nbuf<<" "<<N2<<std::endl;
+void WaveformNew::fft(float lowCut,float upperCut){//CHECK if it's ok
+  
+  int N=_samples.size();//n samples of original waveform
 
-	// Allocate array of sampling size plus optional buffer zones
-	Double_t* array = new Double_t[N2] ;
-
-	// Find bin ID that contains zero value
-	int zeroBin = 0 ;
-	for(int i=0;i<n;i++){
-	  if(_samples[i]<=0)zeroBin++;
-	  else break;
-	}
-
-	int binShift = int(N2/_samples.size());
-	zeroBin+=binShift;
-
-	std::cout<<"zerobin"<<zeroBin<<std::endl;
-
-	while(zeroBin>=N2) zeroBin-= N2 ;
-	while(zeroBin<0) zeroBin+= N2 ;
-
-	// First scan hist into temp array 
-	Double_t *tmp = new Double_t[N2] ;
-	Int_t k(0) ;
-	// Sample entire extended range (N2 samples)
-	for (k=0 ; k<N2 ; k++) {
-	  std::cout<<k<<" tmp samples"<<tmp[k]<<" "<<_samples[k]<<std::endl;
-	  tmp[k]= _samples[k];//FIXME COME FA A NON CRASHARE????
-	  //	  if(k<nbuf)tmp[k] = _samples[zeroBin];
-	  //	  else if (k<n)   tmp[k] = _samples[k];
-	  //	  else tmp[k]=_samples[n-1];//FIXME
-	}  
-
-	for (Int_t i=0 ; i<N2 ; i++) {
-	  // Cyclically shift writing location by zero bin position    
-	  Int_t j = i - (zeroBin) ;
-	  if (j<0) j+= N2 ;
-	  if (j>=N2) j-= N2 ;
-	  array[i] = tmp[j] ;
-	}  
+  Double_t* input = sampleWaveform(N);
 
 
+  TVirtualFFT* fftr2c = TVirtualFFT::FFT(1, &N, "R2CK");
+  TVirtualFFT* fftc2r = TVirtualFFT::FFT(1, &N, "C2RK");
 
-	//	TVirtualFFT *vfft =TVirtualFFT::FFT(1,&n,"R2CK");
+  fftr2c->SetPoints(input);
+  fftr2c->Transform();
 
-	//	Double_t orig_re[n],orig_im[n];
-	//	for(int i=0;i<n;i++) 
-	Double_t orig_re[N2],orig_im[N2];
-	TVirtualFFT *vfft =TVirtualFFT::FFT(1,&N2,"R2CK");
-	for(int i=0;i<N2;i++) 
-		{
-		  //	orig_re[i]=_samples[i];
-		  orig_re[i]=array[i];
-		  //		  if(i>1000) orig_re[i]=orig_re[999];// DIGI CAENV1742 NOT USABLE
-		  //  if(i>1000) orig_re[i]=array[999];// DIGI CAENV1742 NOT USABLE
-		  orig_im[i]=0;
-		}
-	vfft->SetPointsComplex(orig_re,orig_im);
-	vfft->Transform();
-	//	Double_t re[n],im[n];
-	Double_t re[N2],im[N2];
-	vfft->GetPointsComplex(re,im);
-	_fft_re.clear();
-	_fft_im.clear();
-	//	for(int i=0;i<n ;i++)
-	for(int i=0;i<N2 ;i++)
-		{
-		_fft_re.push_back(re[i]);
-		_fft_im.push_back(im[i]);
-		}
+  // Loop over first half +1 of complex output results, multiply 
+  // and set as input of reverse transform
+  for (Int_t i=0 ; i<N/2+1; i++) {
+    Double_t re,im ;
+    fftr2c->GetPointComplex(i,re,im) ;
+    //compute frequency in fft
+    float Fs=N/(_samples[N-1]-_samples[0]);//sampling rate 
+    float F=i*Fs/N;
+    if(F<lowCut || F>upperCut) continue;
+    TComplex t(re,im) ;
+    fftc2r->SetPointComplex(i,t) ;
+  }
 
-	delete vfft;
+  // Reverse Complex->Real FFT transform product
+  fftc2r->Transform() ;
+
+
+  WaveformNew* invfftWave = new WaveformNew();
+
+  for (Int_t i =0 ; i<N ; i++) {
+    _samples[i]=fftc2r->GetPointReal(i);
+    //    invfftWave->addSample(fftr2c->GetPointReal(i),(_times[1]-_times[0]));
+
+  }
+
 }
 
-void WaveformNew::inv_fft(int cut=0,double tau){
-	int n=_samples.size();
-	TVirtualFFT *vfft =TVirtualFFT::FFT(1,&n,"C2CBACKWARD M K");
-	Double_t orig_re[n],orig_im[n];
 
-	assert( n == _fft_re.size() );
-	assert( n == _fft_im.size() );
 
-	for(int i=0;i<n;i++) 
-		{
-		if( i> cut -1 && i<n-cut) 
-			{
-			int delta = TMath::Min(i-cut-1,n-cut-i); 
-			double dump=TMath::Exp(-delta/tau);
-			orig_im[i]=_fft_im[i]*dump;
-			orig_re[i]=_fft_re[i]*dump;
-			continue;
-			}
-		orig_re[i]= _fft_re[i];
-		orig_im[i]= _fft_im[i];
-		}
 
-	vfft->SetPointsComplex(orig_re,orig_im);
-	vfft->Transform();
-	Double_t re[n],im[n];
-	vfft->GetPointsComplex(re,im);
-	_samples.clear();
-	for(int i=0;i<n ;i++)
-		{
-		_samples.push_back(re[i]/n);
-		}
-	
-	delete vfft;
+Double_t* WaveformNew::sampleWaveform(int N){
+
+  // Allocate array of sampling size plus optional buffer zones
+  Double_t* array = new Double_t[N] ;
+
+
+  // Scan function and store values in array
+  for (Int_t i=0 ; i<N ; i++) {
+    array[i] = _samples[i] ;
+  }  
+  
+  return array ;
+
+
 }
 
-void WaveformNew::inv_fft(){
-  //	int n=_samples.size();
-  //  int n=_fft_re.size();
-
-  int n=1024;
-	float bufferFraction=0.10;//buffer for avoiding cyclical flow, default is 10% of window
-	int nbuf=(n*bufferFraction)/2+0.5;
-	int N2=n+2*nbuf;
 
 
-	//	TVirtualFFT *vfft =TVirtualFFT::FFT(1,&n,"C2CBACKWARD M K");
-  std::cout<<"fft size"<<n<<std::endl;
-	TVirtualFFT *vfft =TVirtualFFT::FFT(1,&N2,"C2RK");
-	Double_t orig_re[n],orig_im[n];
-
-//	assert( n == _fft_re.size() );
-//	assert( n == _fft_im.size() );
-
-	for(int i=0;i<N2/2+1;i++) 
-		{
-		orig_re[i]= _fft_re[i];
-		orig_im[i]= _fft_im[i];
-		}
-
-	vfft->SetPointsComplex(orig_re,orig_im);
-	vfft->Transform();
-
-
-	int totalShift = (N2-n)/2;
-
-	std::cout<<"totalShift:"<<totalShift<<std::endl;
-
-	Double_t re[n],im[n];
-	vfft->GetPointsComplex(re,im);
-	//	_samples.clear();
-	for(int i=0;i<n ;i++)
-		{
-		  // Cyclically shift array back so that bin containing zero is back in zeroBin
-		  Int_t j = i + totalShift ;
-		  while (j<0) j+= N2 ;
-		  while (j>=N2) j-= N2 ;
-
-		  _samples.push_back(re[j]/n);
-		}
-
-	delete vfft;
-}
-
-void WaveformNew::inv_fft_multiply(){
-	int n=_samples.size()*2;
-	TVirtualFFT *vfft =TVirtualFFT::FFT(1,&n,"C2CBACKWARD M K");
-	Double_t orig_re[n],orig_im[n];
-
-	assert( n == _fft_re.size() );
-	assert( n == _fft_im.size() );
-
-	for(int i=0;i<n;i++) 
-		{
-		orig_re[i]= _fft_re[i];
-		orig_im[i]= _fft_im[i];
-		}
-
-	vfft->SetPointsComplex(orig_re,orig_im);
-	vfft->Transform();
-	Double_t re[n],im[n];
-	vfft->GetPointsComplex(re,im);
-	_samples.clear();
-	for(int i=0;i<n*2 ;i++)
-		{
-		_samples.push_back(re[i]/n);
-		}
-
-	delete vfft;
-}
 
 ///multiply two waveforms
 void WaveformNew::multiply(WaveformNew*  wave)
@@ -653,31 +528,5 @@ void WaveformNew::multiply(WaveformNew*  wave)
       _samples[i]*=wave->_samples[i];
       //      std::cout<<"samples:"<<_samples[i]<<" wave:"<<wave->_samples[i]<<std::endl;
     }
-  };
-
-  ///multiply fft of two waveforms
-void  WaveformNew::multiply_fft(WaveformNew*  wave)//FIXME implement correctly
-  {
-
-    int n=_samples.size();
-    //	TVirtualFFT *vfft =TVirtualFFT::FFT(1,&n,"C2CFORWARD");
-    float bufferFraction=0.10;//buffer for avoiding cyclical flow, default is 10% of window
-    int nbuf=(n*bufferFraction)/2+0.5;
-    int N2=n+2*nbuf;
-    
-    std::cout<<"multiply n:"<<n<<" n2"<<N2<<" nbuf:"<<nbuf<<"fft_size: "<<_fft_re.size()<<std::endl;
-    //    _fft_re.resize(_samples.size());
-    //    _fft_im.resize(_samples.size());
-
-    //    for (unsigned int i(0);i<_samples.size()/2+1;++i){
-    for (unsigned int i(0);i<N2/2+1;++i){
-	_fft_re[i]=_fft_re[i]*wave->_fft_re[i]-_fft_im[i]*wave->_fft_im[i];
-	_fft_im[i]=_fft_re[i]*wave->_fft_im[i]+wave->_fft_re[i]*_fft_im[i];
-//	std::cout<<"real"<<_fft_re[i]<<"wave:"<<wave->_fft_re[i]<<std::endl;
-//	std::cout<<"im"<<_fft_im[i]<<"wave:"<<wave->_fft_im[i]<<std::endl;
-    }
-    _fft_re.resize(N2/2+1);
-    _fft_im.resize(N2/2+1);
-
   };
 

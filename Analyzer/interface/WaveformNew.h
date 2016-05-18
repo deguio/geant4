@@ -4,6 +4,7 @@
 #include "TROOT.h"
 #include "Math/Interpolator.h"
 #include "TVirtualFFT.h"
+#include "TComplex.h"
 
 #include "TH1.h"
 
@@ -23,15 +24,18 @@ class WaveformNew
   std::vector<double> _fftI_samples;
 
   //FFT tools	
-  void fft(); // compute the fft
-  void inv_fft(int cut,double tau=0.0001); // compute the inverse fft, with a freq cut. Hard.
-  void inv_fft(); // compute the inverse fft, with a freq cut. Hard.
-  void inv_fft_multiply(); // compute the inverse fft, with a freq cut. Hard.
- 
+  //  void fft(); // compute the fft
+  //  void inv_fft(int cut,double tau=0.0001); // compute the inverse fft, with a freq cut. Hard.
+  //  void inv_fft(); // compute the inverse fft, with a freq cut. Hard.
+  //  void inv_fft_multiply(); // compute the inverse fft, with a freq cut. Hard.
+  void fft(float lowCut=0,float Uppercut=100000000); 
+  Double_t* sampleWaveform(int N);
+
+
   //multiply two waveforms in time domain
   void multiply(WaveformNew*  wave);
   //multiply fft of two waveforms
-  void multiply_fft(WaveformNew*  wave);//FIXME implement correctly
+  //  void multiply_fft(WaveformNew*  wave);//FIXME implement correctly
 
 
   

@@ -102,14 +102,18 @@ int main( int argc, char* argv[] ) {
   WaveformNew* waveRespNew = new WaveformNew(histoResponse->GetNbinsX(),waveGraphResp->GetX(),waveGraphResp->GetY());
 
   std::cout<<"BEFORE"<<std::endl;
-  TH1F* histConvBef = waveF->get_histo("waveF");//FIXME!check if it's ok before fft
+  //  TH1F* histConvBef = waveF->get_histo("waveF");//FIXME!check if it's ok before fft
 
-  waveF->fft();
+  waveFNew->fft();
+  TH1F* histConvBef = waveFNew->get_histo("waveF");//FIXME!check if it's ok before fft
+
+  //  waveF->inv_fft();
+
   waveResp->fft();
 
-  waveF->multiply_fft(waveResp);//FIXME implement correctly
+  //  waveF->multiply_fft(waveResp);//FIXME implement correctly
   //  waveF->inv_fft(0,30);
-  waveF->inv_fft();
+  //  waveF->inv_fft();
   //  waveF->inv_fft_multiply();
   //  waveF->inv_fft(100,10);
   //  waveF->print();
@@ -158,7 +162,7 @@ int main( int argc, char* argv[] ) {
   //  rfa1->plotOn(frame1);
 //  //  std::cout<<"norm: "<<waveform->Integral()<<std::endl;
   wave.plotOn(frame1,RooFit::LineColor(kBlack),RooFit::DrawOption("L"),RooFit::LineWidth(2));
-  convolutionShaping.plotOn(frame1,RooFit::LineColor(kRed)) ;
+  //  convolutionShaping.plotOn(frame1,RooFit::LineColor(kRed)) ;
 
   TH1* histo_shaped =  convolutionShaping.createHistogram("t");
   histo_shaped->Sumw2();
@@ -176,7 +180,7 @@ int main( int argc, char* argv[] ) {
   ///  histConvNew->Scale(hdummy->Integral(0,200)/histConvNew->Integral(0,200));
   //  hdummy->DrawNormalized("L");
   //  histo_shaped->DrawNormalized("Lsame");
-    histConv->Draw("same");
+  //    histConv->Draw("same");
     histConvNew->DrawNormalized("same");
 
   c1.SaveAs("histpdf.png");
@@ -187,6 +191,7 @@ int main( int argc, char* argv[] ) {
   hdummy->Write("hdummy");
   histConv->Write("histConv");
   histConvNew->Write("histConvNew");
+  histConvBef->Write("histConvBef");
   outFile->Close();
 
   return 0;

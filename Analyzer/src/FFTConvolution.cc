@@ -88,7 +88,7 @@ WaveformNew* FFTConvolution::fftConvolute(WaveformNew*  wave1,WaveformNew*  wave
     Int_t j = i + totalShift ;
     while (j<0) j+= N2 ;
     while (j>=N2) j-= N2 ;
-    convolutedWave->addSample(fftc2r->GetPointReal(j),0.2);//FIXME do dynamic
+    convolutedWave->addSample(fftc2r->GetPointReal(j),(wave1->_times[1]-wave1->_times[0]));//FIXME do dynamic
   }
 
 
