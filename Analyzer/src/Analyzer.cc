@@ -3,7 +3,7 @@
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
-#define DOSHAPING 0
+#define DOSHAPING 1
 #define LIMIT_NENTRIES 0
 
 void Analyzer::addHisto(TString name, int nBins, float XLow, float XUp, TString XLabel){
@@ -168,7 +168,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
    if(LIMIT_NENTRIES)fileName+="_test_";
    fileName+=".root";
 
-  TFile* outFile = TFile::Open(fileName,"recreate");
+
 
   createHistos();
 
@@ -180,7 +180,29 @@ void Analyzer::Loop(std::string setup, std::string energy)
 
 
    Long64_t nbytes = 0, nb = 0;
-   TH1F* wave = new TH1F("wave","wave",200,0,200);
+   TH1F* wave = new TH1F("wave","wave",1024,0,200);
+
+
+   //photodetector response
+
+   ///MAPD response from ECAL fit of APD pulse shape
+   RooRealVar t("t","t", 0, 200);
+   TF1 *f = new  TF1("f", "pow(exp(1.)*[1]*(x)/[0],[0])*exp(-[1]*(x))",0.,200.);
+   f->SetParameters(3.0, 0.8);
+	
+   RooAbsPdf* rfa1 = RooFit::bindPdf(f,t);
+   TH1* MAPDResponse = rfa1->createHistogram("t",1024);
+   TGraph* MAPDGraphResp = new TGraph(MAPDResponse);
+   WaveformNew* waveRespNew = new WaveformNew(MAPDResponse->GetNbinsX(),MAPDGraphResp->GetX(),MAPDGraphResp->GetY());
+
+   //Response of preamp board, from Ulf Roser simulations of circuit
+   TFile* file2 = TFile::Open("circuitResponse.root");
+   TGraph* graphCircuit = (TGraph*) file2->Get("WaveFormCircuit");
+   WaveformNew* waveCircuit = new WaveformNew(graphCircuit->GetN(),graphCircuit->GetX(),graphCircuit->GetY());
+
+
+  TFile* outFile = TFile::Open(fileName,"recreate");
+
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
@@ -248,14 +270,12 @@ void Analyzer::Loop(std::string setup, std::string energy)
 
 
 
-      //shaping of photodetectors
-
       //      wave->Sumw2();
-      wave->Scale(1./wave->Integral());//even if for our porposes it's not important pdfs should be normalized to avoid troubles in convolution
-
+      
+   
       TGraph* waveGraph = new TGraph(wave);
-      Waveform* waveF = new Waveform(wave->GetNbinsX(),waveGraph->GetX(),waveGraph->GetY());
-      Waveform::max_amplitude_informations wave_max_bare = waveF->max_amplitude(4,100,3);
+      WaveformNew* waveF = new WaveformNew(wave->GetNbinsX(),waveGraph->GetX(),waveGraph->GetY());
+      WaveformNew::max_amplitude_informations wave_max_bare = waveF->max_amplitude(4,100,3);
 
       float time_frac50 = waveF->time_at_frac(0,100,0.5,wave_max_bare,3);
 
@@ -265,46 +285,39 @@ void Analyzer::Loop(std::string setup, std::string energy)
 
     
       if(DOSHAPING){
-	RooRealVar t("t","t", 0, 200);
-	RooDataHist waveHist("wave","dataset with t",t,RooFit::Import(*wave) );
-	RooHistPdf histpdf1("histpdf1","histpdf1",t,waveHist);
-	
-	
-	TF1 *f = new  TF1("f", "pow(exp(1.)*[1]*(x)/[0],[0])*exp(-[1]*(x))",0.,200.);
-	f->SetParameters(3.0, 0.8);
-	
-	RooAbsPdf* rfa1 = RooFit::bindPdf(f,t);
-	
-	RooNumConvPdf convolutionShaping("convolutionShaping","exp (X) crrc",t,histpdf1,*rfa1) ;
-	RooRealVar center("center","center",50,0,400);
-	RooRealVar width("width","width",50,0,400);
-	
-	convolutionShaping.setConvolutionWindow(center,width,1);
-	convolutionShaping.verboseEval(0);
-	convolutionShaping.convIntConfig().setEpsAbs(0.001);//absolute precision
-	convolutionShaping.convIntConfig().setEpsRel(0.001);//relative precision
-	
-	if(jentry==0){
-	  RooPlot* frame1 = t.frame(RooFit::Title("histogram pdf")) ;
-	  //      rfa1->plotOn(frame1);
-	  waveHist.plotOn(frame1,RooFit::LineColor(kBlack),RooFit::DrawOption("L"),RooFit::LineWidth(2));
-	  convolutionShaping.plotOn(frame1,RooFit::LineColor(kRed)) ;
-	  
-	  
-	  TCanvas c1("c_histpdf");
-	  frame1->Draw();
+	//convolution with MAPD
+	FFTConvolution* convProd = new FFTConvolution();
+	WaveformNew* convWave = convProd->fftConvolute(waveF,waveRespNew);
+
+	//convolution with preamp
+	 FFTConvolution* convProd2 = new FFTConvolution();
+	 WaveformNew* convWave2 = convProd2->fftConvolute(convWave,waveCircuit);
+
+
+
+	 if(jentry==0){
+	   TCanvas c1("c_histpdf");
+	   TH1F* hist = waveF->get_histo("waveF");
+	   TH1F* histConvNew = convWave->get_histo("waveFNew");
+	   histConvNew->SetLineColor(kGreen+2);
+	   TH1F* histConvNew2 = convWave2->get_histo("waveFNew2");
+	   hist->Scale(1./hist->GetMaximum());
+	   histConvNew->Scale(1./histConvNew->GetMaximum());
+	   histConvNew2->Scale(1./histConvNew2->GetMaximum());
+
+	   histConvNew2->SetLineColor(kRed);
+	   hist->Draw("histL");
+	   histConvNew->Draw("same");
+	   histConvNew2->Draw("same");
 	  c1.SaveAs("histpdf_analyzer.png");
+	  c1.SaveAs("histpdf_analyzer.pdf");
 	}
 	
-	TH1* histo_shaped =  convolutionShaping.createHistogram("t",200);
-	histo_shaped->SetName("histo_shaped");
 
-	TGraph* waveGraph_shaped=new TGraph(histo_shaped);
-	Waveform* waveF_shaped = new Waveform(200,waveGraph_shaped->GetX(),waveGraph_shaped->GetY());
-	Waveform::max_amplitude_informations wave_max_bare_shaped = waveF_shaped->max_amplitude(4,100,3);
+	WaveformNew::max_amplitude_informations wave_max_bare_shaped = convWave2->max_amplitude(4,100,3);
 
 
-	histos_["time_frac50_shaped"]->Fill(waveF_shaped->time_at_frac(0,100,0.5,wave_max_bare_shaped,3));
+	histos_["time_frac50_shaped"]->Fill(convWave2->time_at_frac(0,100,0.5,wave_max_bare_shaped,3));
 
 
       }

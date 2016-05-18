@@ -198,7 +198,7 @@ class WaveformNew
     TH1F* histo=new TH1F(name,name,_times.size(),_times[0],_times[_samples.size()-1]);
     for (unsigned int i(0);i<_samples.size();++i){
       histo->Fill(_times[i],_samples[i]);
-      std::cout<<"[GETHISTO]:"<<i<<" "<<_times[i]<<" "<<_samples[i]<<std::endl;
+      //      std::cout<<"[GETHISTO]:"<<i<<" "<<_times[i]<<" "<<_samples[i]<<std::endl;
     }
     return histo;
   }
@@ -207,7 +207,7 @@ class WaveformNew
     TH1F* histo=new TH1F(name,name,_times.size()*2,_times[0]*2,_times[_samples.size()-1]*2);
     for (unsigned int i(0);i<_samples.size();++i){
       histo->Fill(_times[i],_samples[i]);
-      std::cout<<"[GETHISTO]:"<<i<<" "<<_times[i]<<" "<<_samples[i]<<std::endl;
+      //      std::cout<<"[GETHISTO]:"<<i<<" "<<_times[i]<<" "<<_samples[i]<<std::endl;
     }
     return histo;
   }

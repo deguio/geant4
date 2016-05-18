@@ -76,8 +76,8 @@ int main( int argc, char* argv[] ) {
     waveF = new Waveform(waveGraph->GetN(),waveGraph->GetX(),waveGraph->GetY());
     waveFNew = new WaveformNew(waveGraph->GetN(),waveGraph->GetX(),waveGraph->GetY());
 
-    waveform->Sumw2();
-    waveform->Scale(1./waveform->Integral());
+    //    waveform->Sumw2();
+    //    waveform->Scale(1./waveform->Integral());
   }
 
 
@@ -94,6 +94,8 @@ int main( int argc, char* argv[] ) {
   TF1 *f = new  TF1("f", "pow(exp(1.)*[1]*(x)/[0],[0])*exp(-[1]*(x))",0.,200.);
   f->SetParameters(3.0, 0.8);
 
+
+
   RooAbsPdf* rfa1 = RooFit::bindPdf(f,t);
   //try with fft convolution in time is multiplication in frequency
   TH1* histoResponse = rfa1->createHistogram("t",1024);
@@ -106,6 +108,7 @@ int main( int argc, char* argv[] ) {
 
   waveFNew->fft();
   TH1F* histConvBef = waveFNew->get_histo("waveF");//FIXME!check if it's ok before fft
+
 
   //  waveF->inv_fft();
 
@@ -120,8 +123,20 @@ int main( int argc, char* argv[] ) {
 
   FFTConvolution* convProd = new FFTConvolution();
   WaveformNew* convWave = convProd->fftConvolute(waveFNew,waveRespNew);
-  TH1F* histConvNew = convWave->get_histo("waveFNew");//FIXME!check if it's ok before fft
+  TH1F* histConvNew = convWave->get_histo("waveFNew");
   histConvNew->SetLineColor(kGreen+2);
+
+
+  TFile* file2 = TFile::Open("circuitResponse.root");
+  TGraph* graphCircuit = (TGraph*) file2->Get("WaveFormCircuit");
+  WaveformNew* waveCircuit = new WaveformNew(graphCircuit->GetN(),graphCircuit->GetX(),graphCircuit->GetY());
+  FFTConvolution* convProd2 = new FFTConvolution();
+  WaveformNew* convWave2 = convProd2->fftConvolute(convWave,waveCircuit);
+  //    WaveformNew* convWave2 = convProd2->fftConvolute(convWave,waveFNew);
+  TH1F* histConvNew2 = convWave2->get_histo("waveFNew2");
+  histConvNew2->SetLineColor(kRed);
+
+  
 
   std::cout<<"------------------------AFTER-------------------------"<<std::endl;
   TH1F* histConv = waveF->get_histo("waveF");//FIXME!check if it's ok before fft
@@ -161,7 +176,10 @@ int main( int argc, char* argv[] ) {
   RooPlot* frame1 = t.frame(RooFit::Title("histogram pdf")) ;
   //  rfa1->plotOn(frame1);
 //  //  std::cout<<"norm: "<<waveform->Integral()<<std::endl;
-  wave.plotOn(frame1,RooFit::LineColor(kBlack),RooFit::DrawOption("L"),RooFit::LineWidth(2));
+  wave.plotOn(frame1,RooFit::LineColor(kBlack),RooFit::DrawOption("L"),RooFit::LineWidth(2),RooFit::Precision(0.1));
+  float binWidth = histConvNew->GetXaxis()->GetBinWidth(1);
+  std::string ytitle = Form("Response [a.u.]",binWidth);
+  frame1->SetYTitle(ytitle.c_str());
   //  convolutionShaping.plotOn(frame1,RooFit::LineColor(kRed)) ;
 
   TH1* histo_shaped =  convolutionShaping.createHistogram("t");
@@ -173,7 +191,14 @@ int main( int argc, char* argv[] ) {
   hdummy->SetLineColor(kRed);
   TCanvas c1("c_histpdf");
 
-  frame1->Draw();
+  //  frame1->Draw();
+  TGaxis::SetMaxDigits(1); 
+  waveform->GetXaxis()->SetNoExponent(kTRUE);  
+  waveform->GetYaxis()->SetTitle(ytitle.c_str());
+  waveform->Scale(1./waveform->GetMaximum());
+  histConvNew->Scale(1./histConvNew->GetMaximum());
+  histConvNew2->Scale(1./histConvNew2->GetMaximum());
+  waveform->Draw("histL");
   std::cout<<"NBINS:"<<histConv->GetNbinsX()<<" "<<hdummy->GetNbinsX()<<std::endl;
   std::cout<<hdummy->Integral()<<" "<<histConv->Integral()<<std::endl;
   histConv->Scale(hdummy->Integral(0,200)/histConv->Integral(0,200));
@@ -181,9 +206,12 @@ int main( int argc, char* argv[] ) {
   //  hdummy->DrawNormalized("L");
   //  histo_shaped->DrawNormalized("Lsame");
   //    histConv->Draw("same");
-    histConvNew->DrawNormalized("same");
+
+  histConvNew->Draw("same");
+  histConvNew2->Draw("same");
 
   c1.SaveAs("histpdf.png");
+  c1.SaveAs("histpdf.pdf");
 
   c1.Write();
   outFile->Write();
@@ -191,6 +219,7 @@ int main( int argc, char* argv[] ) {
   hdummy->Write("hdummy");
   histConv->Write("histConv");
   histConvNew->Write("histConvNew");
+  histConvNew2->Write("histConvNew2");
   histConvBef->Write("histConvBef");
   outFile->Close();
 

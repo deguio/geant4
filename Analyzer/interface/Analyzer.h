@@ -58,6 +58,10 @@
 #include <map>
 #include <algorithm>
 
+//for fft
+#include "Waveform.h"
+#include "FFTConvolution.h"
+
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
 class Analyzer {
