@@ -4,7 +4,7 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 #define DOSHAPING 1
-#define LIMIT_NENTRIES 0
+#define LIMIT_NENTRIES 1
 
 void Analyzer::addHisto(TString name, int nBins, float XLow, float XUp, TString XLabel){
 
@@ -103,7 +103,8 @@ void Analyzer::createHistos(){
  addHisto("Time_nPhotTiming",100,0,50,"time [ns]"); 
 
  addHisto("time_frac50",300,10,20,"time[ns]");
- addHisto("time_frac50_shaped",400,10,30,"time [ns]");
+ addHisto("time_frac50_shaped_apd",500,16,19,"time [ns]");
+ addHisto("time_frac50_shaped",500,16,19,"time [ns]");
 
  addHisto2D("time_frac50_vs_Z",420,0,420,"Z [mm]",500,10,100,"time [ns]");
  addHisto2D("time_frac50_vs_Z_fast",420,0,420,"Z [mm]",500,10,30,"time [ns]");
@@ -157,7 +158,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
    //      std::random_shuffle(LY.begin(),LY.end());
 
    Long64_t nentries = fChain->GetEntries();
-   if(LIMIT_NENTRIES)   nentries = 400;
+   if(LIMIT_NENTRIES)   nentries = 200;
    energy_=energy;
    setup_=setup;
 
@@ -314,11 +315,18 @@ void Analyzer::Loop(std::string setup, std::string energy)
 	}
 	
 
-	WaveformNew::max_amplitude_informations wave_max_bare_shaped = convWave2->max_amplitude(4,100,3);
+	 //	WaveformNew::max_amplitude_informations wave_max_bare_shaped = convWave2->max_amplitude(4,100,3);
+	 WaveformNew::max_amplitude_informations wave_max_bare_shaped_apd = convWave->max_amplitude(4,100,3);
+	 histos_["time_frac50_shaped_apd"]->Fill(convWave->time_at_frac(0,100,0.5,wave_max_bare_shaped_apd,3));
 
 
-	histos_["time_frac50_shaped"]->Fill(convWave2->time_at_frac(0,100,0.5,wave_max_bare_shaped,3));
+	 //	WaveformNew::max_amplitude_informations wave_max_bare_shaped = convWave2->max_amplitude(4,100,3);
+	 WaveformNew::max_amplitude_informations wave_max_bare_shaped = convWave2->max_amplitude(4,100,3);
+	 histos_["time_frac50_shaped"]->Fill(convWave2->time_at_frac(0,100,0.5,wave_max_bare_shaped,3));
 
+
+
+	 //	std::cout<<" frac50_shaped:"<<convWave->time_at_frac(0,100,0.5,wave_max_bare_shaped,3)<<std::endl;
 
       }
 
@@ -403,7 +411,11 @@ void Analyzer::Loop(std::string setup, std::string energy)
    fitHisto(histos_["time_frac50"],resValueTime_frac50,resValueTimeErr_frac50);
    fitHisto(histos_["nPhotons"],resValueEnergy,resValueEnergyErr,true,meanValueEnergy,meanValueEnergyErr);
    fitHisto(histos_["EactLYScaled"],resValueEactLYScaled,resValueEactLYScaledErr,true,meanValueEactLYScaled,meanValueEactLYScaledErr);
-   if(DOSHAPING)    fitHisto(histos_["time_frac50_shaped"],resValueTime_frac50_shaped,resValueTimeErr_frac50_shaped);
+   if(DOSHAPING){
+     fitHisto(histos_["time_frac50_shaped_apd"],resValueTime_frac50_shaped_apd,resValueTimeErr_frac50_shaped_apd);
+     fitHisto(histos_["time_frac50_shaped"],resValueTime_frac50_shaped,resValueTimeErr_frac50_shaped);
+
+   }
    drawHistos();
 
    TCanvas wave_canvas;
@@ -435,6 +447,9 @@ void Analyzer::Loop(std::string setup, std::string energy)
 
    resValueTime_frac50->Write("resValueTime_frac50");
    resValueTimeErr_frac50->Write("resValueTimeErr_frac50");
+
+   resValueTime_frac50_shaped_apd->Write("resValueTime_frac50_shaped_apd");
+   resValueTimeErr_frac50_shaped_apd->Write("resValueTimeErr_frac50_shaped_apd");
    
    resValueTime_frac50_shaped->Write("resValueTime_frac50_shaped");
    resValueTimeErr_frac50_shaped->Write("resValueTimeErr_frac50_shaped");
@@ -468,6 +483,7 @@ void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEner
   RooRealVar alphaR("alphaR","#alpha",5.08615e-02, 0., 1.);
   int ndf;
 
+  TGaxis::SetMaxDigits(2);
   RooPlot* frame;
 
   RooCruijff fit_fct("fit_fct","fit_fct",x,meanr,widthL,widthR,alphaL,alphaR); ndf = 5;
@@ -481,12 +497,13 @@ void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEner
   std::string ytitle = Form("Events");
   frame->SetYTitle(ytitle.c_str());
   
-  data.plotOn(frame);  //this will show histogram data points on canvas 
+  data.plotOn(frame,RooFit::Precision(1));  //this will show histogram data points on canvas 
   fit_fct.plotOn(frame);//this will show fit overlay on canvas  
 
   double rms,rmsErr;
   rms = (widthL.getVal()+widthR.getVal())/2;
   rmsErr = 0.5*sqrt(widthL.getError()*widthL.getError()+widthR.getError()*widthR.getError());
+
 
   TCanvas* cans = new TCanvas();
   cans->cd();
@@ -525,7 +542,7 @@ void Analyzer::fitHisto(TH1F* histo, TVectorD* res, TVectorD* resErr,bool isEner
   cans->SaveAs(outDir_+histo->GetName()+"_cruijff_fit.png");
   cans->SaveAs(outDir_+histo->GetName()+"_cruijff_fit.pdf");
 
-
+  //  TGaxis::SetMaxDigits(5);//default value
 
 }
 

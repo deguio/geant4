@@ -97,6 +97,9 @@ public :
 
    TVectorD* resValueTime_frac50_shaped;
    TVectorD* resValueTimeErr_frac50_shaped;
+
+   TVectorD* resValueTime_frac50_shaped_apd;
+   TVectorD* resValueTimeErr_frac50_shaped_apd;
    
 
    // Declaration of leaf types
@@ -239,6 +242,9 @@ void Analyzer::Init(TTree *tree)
 
   resValueTime_frac50_shaped = new TVectorD(1);
   resValueTimeErr_frac50_shaped = new TVectorD(1);
+
+  resValueTime_frac50_shaped_apd = new TVectorD(1);
+  resValueTimeErr_frac50_shaped_apd = new TVectorD(1);
 
 
    // Set object pointer
