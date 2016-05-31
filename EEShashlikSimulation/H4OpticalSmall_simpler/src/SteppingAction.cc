@@ -14,6 +14,8 @@ using namespace CLHEP;
 //G4double fibre2;
 //G4double fibre3;
 
+TRandom3* randomGen=new TRandom3;
+
 int to_int (string name)
 {
   int Result ; // int which will contain the result
@@ -84,15 +86,28 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 
 
   // optical photon
-
   if( particleType == G4OpticalPhoton::OpticalPhotonDefinition() )
     {
-      
+     
+
+ 
       G4int copyNo = theTouchable->GetCopyNumber();
       G4int motherCopyNo = theTouchable->GetCopyNumber(1);
 
 
 
+            
+
+      
+      if(nStep==1){
+	float quantumEfficiency=0.15;//average value of qe
+	float mirroringGain=0.25;//mirroring a fibre at one end gives 25% light more (theoretical max is 50%)
+    
+	bool saveEvent=false;
+	float rndNum=randomGen->Uniform( 0.,1. );
+	if(rndNum<(quantumEfficiency*(1+mirroringGain)))saveEvent=true;
+	if(!saveEvent)	theTrack->SetTrackStatus(fStopAndKill);
+      }
 
       //FUCK IT Let's just kill them before they bounce that much...
       if( nStep>6 && theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act")){
