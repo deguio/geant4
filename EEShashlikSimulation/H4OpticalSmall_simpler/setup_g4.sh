@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $HOSTNAME = "t3ui"* ]]; then
+if [[ $HOSTNAME = "t3ui19" ]]; then
     # Set paths to the extra Geant4 data; works by default on lxplus
     export G4LEDATA=/shome/tklijnsm/geant4/geant4.10.01.p02-install/share/Geant4-10.1.2/data/G4EMLOW6.40
     export G4LEVELGAMMADATA=/shome/tklijnsm/geant4/geant4.10.01.p02-install/share/Geant4-10.1.2/data/PhotonEvaporation3.1
