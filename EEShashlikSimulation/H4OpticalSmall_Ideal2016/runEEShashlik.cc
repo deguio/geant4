@@ -32,7 +32,7 @@
 // Number of layers, BGOs and fibres
 // Better to set these here to prevent problems with ROOT branch creation and filling
 #include <vector>
-int nLayers = 10; 
+int nLayers = 12; 
 int nBGOs = 24;
 int nFibres = 0;
 
