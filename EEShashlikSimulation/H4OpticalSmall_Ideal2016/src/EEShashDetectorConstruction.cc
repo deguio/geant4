@@ -887,7 +887,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  G4ThreeVector(0., 0., absThickness/2.), // its position
                  actLV,            // its logical volume                         
                  "ActPV2",            // its name
-                 layerLV,          // its mother  volume
+                 layerLV2,          // its mother  volume
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
