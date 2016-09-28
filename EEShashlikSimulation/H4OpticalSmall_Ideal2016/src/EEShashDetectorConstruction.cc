@@ -811,7 +811,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   new G4PVReplica(
                  "Layer",          // its name
                  layerLV2,          // its logical volume
-                 calorLV,          // its mother
+                 calorLV2,          // its mother
                  kZAxis,           // axis of replication
                  fNofLayers,        // number of replica
                  layerThickness);  // width of replica
