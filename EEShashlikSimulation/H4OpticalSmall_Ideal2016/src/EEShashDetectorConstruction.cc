@@ -756,6 +756,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  defaultMaterial,  // its material
                  "Calorimeter");   // its name
     
+
+
                              
   new G4PVPlacement(
                  rotation,                // no rotation
@@ -1715,6 +1717,11 @@ void EEShashDetectorConstruction::ConstructSDandField()
   EEShashCalorimeterSD* absSD 
     = new EEShashCalorimeterSD("AbsSD", "AbsHitsCollection", fNofLayers,1);
   SetSensitiveDetector("AbsLV",absSD);
+
+  EEShashCalorimeterSD* calorSD 
+    = new EEShashCalorimeterSD("CalorSD", "CalorHitsCollection", fNofLayers,1);
+  SetSensitiveDetector("ActLV",calorSD);
+
 
   EEShashCalorimeterSD* actSD 
     = new EEShashCalorimeterSD("ActSD", "ActHitsCollection", fNofLayers,1);

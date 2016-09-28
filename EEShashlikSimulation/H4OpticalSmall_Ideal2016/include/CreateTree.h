@@ -29,6 +29,8 @@ class CreateTree
   float  Eact;
   int    nLayers;
 
+  std::vector<float> Eact_xtal;
+  std::vector<float> Eabs_xtal;
 
   float  xPosition;
   float  yPosition;

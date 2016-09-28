@@ -150,6 +150,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
       = G4SDManager::GetSDMpointer()->GetCollectionID("AbsHitsCollection");
     fActHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection");
+    fCalorHCID 
+      = G4SDManager::GetSDMpointer()->GetCollectionID("CalorHitsCollection");
 //    fBgoHCID 
 //      = G4SDManager::GetSDMpointer()->GetCollectionID("BgoHitsCollection");
     fFibrHCIDCore 
@@ -169,6 +171,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   // Get hits collections
   EEShashCalorHitsCollection* absHC = GetHitsCollection(fAbsHCID, event);
   EEShashCalorHitsCollection* actHC = GetHitsCollection(fActHCID, event);
+
+  EEShashCalorHitsCollection* calorHC = GetHitsCollection(fCalorHCID, event);
   EEShashCalorHitsCollection* bgoHC = GetHitsCollection(fBgoHCID, event);
   EEShashCalorHitsCollection* fibrHCCore = GetHitsCollection(fFibrHCIDCore, event);
   EEShashCalorHitsCollection* fibrHCClad = GetHitsCollection(fFibrHCIDClad, event);
@@ -179,6 +183,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   // Get hit with total values
   EEShashCalorHit* absHit = (*absHC)[absHC->entries()-1];
   EEShashCalorHit* actHit = (*actHC)[actHC->entries()-1];
+
+  EEShashCalorHit* calorHit = (*calorHC)[calorHC->entries()-1];
   //  EEShashCalorHit* bgoHit = (*bgoHC)[bgoHC->entries()-1];
   EEShashCalorHit* fibrHitCore = (*fibrHCCore)[fibrHCCore->entries()-1];
   EEShashCalorHit* fibrHitClad = (*fibrHCClad)[fibrHCClad->entries()-1];
@@ -310,6 +316,7 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   CreateTree::Instance() -> Eabs = absHit->GetEdep();
   CreateTree::Instance() -> Eact = actHit->GetEdep();
 
+  std::cout<<"dajeeeeee calor"<<calorHit->GetEdep()<<std::endl;
 
 
   CreateTree::Instance() -> xPosition = xBeamPos;

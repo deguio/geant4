@@ -21,11 +21,13 @@ import time
 
 def main():
 
-    n_jobs = 100
+    n_jobs = 200
 
     # Energy string
+#    energy = "250GeVsecond"
 #    energy = "200GeV"
-    energy = "100GeV"
+#    energy = "100GeV"
+    energy = "100GeVqe"
 #    energy = "50GeV"
 #    energy = "20GeV"
 #    energy = "1MeV"
@@ -33,6 +35,7 @@ def main():
     # Setup string
     setup = "simpler"
 #    setup = "singleFibre"
+#    setup = "Ideal2016"
     print 'submitting jobs for '+setup
 
 #sub parameters

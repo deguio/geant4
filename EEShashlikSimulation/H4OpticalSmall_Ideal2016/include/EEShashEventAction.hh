@@ -64,6 +64,7 @@ private:
 			    G4double fibrEdepClad, G4double fibrTrackLengthClad) const;
   
   // data members                   
+  G4int  fCalorHCID;
   G4int  fAbsHCID;
   G4int  fActHCID;
   G4int  fBgoHCID;

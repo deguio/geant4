@@ -148,8 +148,8 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   */
 
   // Unsmeared beam position (position center):
-  G4double xBeam = 24.0;
-  G4double yBeam = 24.0;
+  G4double xBeam = 0*mm;
+  G4double yBeam = 0*mm;
 
   // Position 0 <-- Confirmed correct, lower right corner viewed from front
   //G4double xBeam = -11.304;
