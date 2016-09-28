@@ -151,7 +151,7 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
     fActHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection");
     fCalorHCID 
-      = G4SDManager::GetSDMpointer()->GetCollectionID("CalorHitsCollection");
+      = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection2");
 //    fBgoHCID 
 //      = G4SDManager::GetSDMpointer()->GetCollectionID("BgoHitsCollection");
     fFibrHCIDCore 
