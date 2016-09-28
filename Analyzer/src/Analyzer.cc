@@ -4,7 +4,7 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 #define DOSHAPING 1
-#define LIMIT_NENTRIES 1
+#define LIMIT_NENTRIES 0
 
 void Analyzer::addHisto(TString name, int nBins, float XLow, float XUp, TString XLabel){
 
@@ -105,6 +105,7 @@ void Analyzer::createHistos(){
  addHisto("time_frac50",300,10,20,"time[ns]");
  addHisto("time_frac50_shaped_apd",500,16,19,"time [ns]");
  addHisto("time_frac50_shaped",500,16,19,"time [ns]");
+ addHisto("time_frac50_shaped_noNoise",500,16,19,"time [ns]");
 
  addHisto2D("time_frac50_vs_Z",420,0,420,"Z [mm]",500,10,100,"time [ns]");
  addHisto2D("time_frac50_vs_Z_fast",420,0,420,"Z [mm]",500,10,30,"time [ns]");
@@ -166,7 +167,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
    if(LIMIT_NENTRIES)outDir_+="test/";
    system(Form("mkdir -p %s", outDir_.Data()));
    TString fileName = "outFiles/plotterTiming_"+setup+"_"+energy;
-   if(LIMIT_NENTRIES)fileName+="_test_";
+   if(LIMIT_NENTRIES)fileName+="_test";
    fileName+=".root";
 
 
@@ -296,7 +297,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
 
 
 
-	 if(jentry==0){
+	 if(jentry==1){
 	   TCanvas c1("c_histpdf");
 	   TH1F* hist = waveF->get_histo("waveF");
 	   TH1F* histConvNew = convWave->get_histo("waveFNew");
@@ -322,9 +323,11 @@ void Analyzer::Loop(std::string setup, std::string energy)
 
 	 //	WaveformNew::max_amplitude_informations wave_max_bare_shaped = convWave2->max_amplitude(4,100,3);
 	 WaveformNew::max_amplitude_informations wave_max_bare_shaped = convWave2->max_amplitude(4,100,3);
-	 histos_["time_frac50_shaped"]->Fill(convWave2->time_at_frac(0,100,0.5,wave_max_bare_shaped,3));
+	 histos_["time_frac50_shaped_noNoise"]->Fill(convWave2->time_at_frac(0,100,0.5,wave_max_bare_shaped,3));
 
-
+	 convWave2->addUncorrNoise(0.015);//add uncorrelated noise of 1.5% max ampl
+	 WaveformNew::max_amplitude_informations wave_max_bare_shaped_noise = convWave2->max_amplitude(4,100,3);
+	 histos_["time_frac50_shaped"]->Fill(convWave2->time_at_frac(0,100,0.5,wave_max_bare_shaped_noise,3));
 
 	 //	std::cout<<" frac50_shaped:"<<convWave->time_at_frac(0,100,0.5,wave_max_bare_shaped,3)<<std::endl;
 
@@ -413,6 +416,7 @@ void Analyzer::Loop(std::string setup, std::string energy)
    fitHisto(histos_["EactLYScaled"],resValueEactLYScaled,resValueEactLYScaledErr,true,meanValueEactLYScaled,meanValueEactLYScaledErr);
    if(DOSHAPING){
      fitHisto(histos_["time_frac50_shaped_apd"],resValueTime_frac50_shaped_apd,resValueTimeErr_frac50_shaped_apd);
+     fitHisto(histos_["time_frac50_shaped_noNoise"],resValueTime_frac50_shaped_noNoise,resValueTimeErr_frac50_shaped_noNoise);
      fitHisto(histos_["time_frac50_shaped"],resValueTime_frac50_shaped,resValueTimeErr_frac50_shaped);
 
    }
@@ -453,6 +457,9 @@ void Analyzer::Loop(std::string setup, std::string energy)
    
    resValueTime_frac50_shaped->Write("resValueTime_frac50_shaped");
    resValueTimeErr_frac50_shaped->Write("resValueTimeErr_frac50_shaped");
+
+   resValueTime_frac50_shaped_noNoise->Write("resValueTime_frac50_shaped_noNoise");
+   resValueTimeErr_frac50_shaped_noNoise->Write("resValueTimeErr_frac50_shaped_noNoise");
 
 
    outFile->Write();

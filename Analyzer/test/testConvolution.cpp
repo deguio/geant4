@@ -70,7 +70,8 @@ int main( int argc, char* argv[] ) {
   WaveformNew* waveFNew; //FIXME
 
   for(std::map<TString,float>::const_iterator it = energies.begin();it!=energies.end(); it++){
-    TFile* file = TFile::Open("outFiles/plotterTiming_"+setup+"_"+it->first+".root");
+    //    TFile* file = TFile::Open("outFiles/plotterTiming_"+setup+"_"+it->first+"_qe_test_.root");//FIX ME!!!!!
+    TFile* file = TFile::Open("outFiles/plotterTiming_"+setup+"_"+it->first+".root");//FIX ME!!!!!
     waveform = (TH1F*) file->Get("timeArrival");
     TGraph* waveGraph = new TGraph(waveform);
     waveF = new Waveform(waveGraph->GetN(),waveGraph->GetX(),waveGraph->GetY());
@@ -136,6 +137,11 @@ int main( int argc, char* argv[] ) {
   TH1F* histConvNew2 = convWave2->get_histo("waveFNew2");
   histConvNew2->SetLineColor(kRed);
 
+
+  convWave2->addUncorrNoise(0.015);
+  TH1F* histConvNew3 = convWave2->get_histo("waveFNew3");
+  histConvNew3->SetLineColor(kGreen);
+
   
 
   std::cout<<"------------------------AFTER-------------------------"<<std::endl;
@@ -197,7 +203,9 @@ int main( int argc, char* argv[] ) {
   waveform->GetYaxis()->SetTitle(ytitle.c_str());
   waveform->Scale(1./waveform->GetMaximum());
   histConvNew->Scale(1./histConvNew->GetMaximum());
+  histConvNew3->Scale(1./histConvNew2->GetMaximum());
   histConvNew2->Scale(1./histConvNew2->GetMaximum());
+
   waveform->Draw("histL");
   std::cout<<"NBINS:"<<histConv->GetNbinsX()<<" "<<hdummy->GetNbinsX()<<std::endl;
   std::cout<<hdummy->Integral()<<" "<<histConv->Integral()<<std::endl;
@@ -208,6 +216,7 @@ int main( int argc, char* argv[] ) {
   //    histConv->Draw("same");
 
   histConvNew->Draw("same");
+  histConvNew3->Draw("same");
   histConvNew2->Draw("same");
 
   c1.SaveAs("histpdf.png");
@@ -220,6 +229,7 @@ int main( int argc, char* argv[] ) {
   histConv->Write("histConv");
   histConvNew->Write("histConvNew");
   histConvNew2->Write("histConvNew2");
+  histConvNew3->Write("histConvNew3");
   histConvBef->Write("histConvBef");
   outFile->Close();
 

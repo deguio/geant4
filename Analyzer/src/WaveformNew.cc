@@ -530,3 +530,15 @@ void WaveformNew::multiply(WaveformNew*  wave)
     }
   };
 
+
+//simulate uncorrelated noise on each sample
+void WaveformNew::addUncorrNoise(float noise){//noise is in percentage of max ampl
+  TRandom3* noiseGen = new TRandom3(time(NULL));
+  WaveformNew::max_amplitude_informations wave_max_bare = max_amplitude(4,100,3);
+
+  for (unsigned int i(0);i<_samples.size();++i){
+    float noiseG=noiseGen->Gaus(0.,noise)*wave_max_bare.max_amplitude;
+    _samples[i]+=noiseG;
+  }  
+
+}
