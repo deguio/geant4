@@ -1591,8 +1591,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   // create the matrix:
 
-  int copyNumber = 0;
-  int totalCopies = fNofBGOs;
+//  int copyNumber = 0;
+//  int totalCopies = fNofBGOs;
 
   G4VSolid* bgoS 
      = new G4Box("BGOChannel",     // its name
@@ -1643,6 +1643,57 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 //    }
 //  }
       
+
+  int copyNumber = 1;
+  int totalCopies = 25;
+
+  for( int ix=-2; ix<=2; ++ix ) {
+    for( int iy=-2; iy<=2; ++iy ) {
+      if( ix==0 && iy==0 ) continue;  // central channel is the shash
+
+      if( copyNumber>=totalCopies ) {
+        std::cout << "--> ERROR!! Trying to instantiate a number of copies which exceeds totalCopies (=" << totalCopies << std::endl;
+        std::cout << " Exiting." << std::endl;
+        exit(11);  }
+
+      G4double miniGap = 1.5*mm;
+
+
+      //  G4double yPos = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2) + xPos*xPos) ;
+
+      //    G4ThreeVector(xPos,yPos,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696))    ), // its position
+
+
+      G4double zPos = (calorThickness-calorThickness)/2.;
+      G4double xPos = ix*(calorSizeXY + miniGap) ;
+      G4double yPos = iy*(calorSizeXY + miniGap) + sin(fRotation*3.14159265359/180.)*( zPos + fZtraslation) ;
+      G4double yPosPom = iy*(calorSizeXY + miniGap) + sin(fRotation*3.14159265359/180.)*sqrt( (zPos + fZtraslation -calorThickness/2.- pompomLength/2.)*(zPos + fZtraslation -calorThickness/2.- pompomLength/2.) + xPos*xPos) ;
+
+      new G4PVPlacement(
+                     rotation,                // rotation
+                     G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
+                     calorLV,          // its logical volume                         
+                     "Calorimeter",    // its name
+                     labLV,          // its mother  volume
+                     false,            // no boolean operation
+                     copyNumber,                // copy number
+                     fCheckOverlaps);  // checking overlaps 
+
+     new G4PVPlacement(
+                     rotation,                // no rotation
+                     G4ThreeVector(xPos, yPosPom, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation -calorThickness/2.- pompomLength/2.)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
+                     PompomLV,            // its logical volume                         
+                     "Pompom",            // its name
+                     labLV,          // its mother  volume
+                     false,            // no boolean operation
+                     0,                // copy number
+                     fCheckOverlaps);  // checking overlaps 
+
+      copyNumber += 1;
+    }
+  }
+
+
 
   //
   // Always return the physical World
