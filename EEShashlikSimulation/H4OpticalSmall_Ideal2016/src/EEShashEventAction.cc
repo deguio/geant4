@@ -150,8 +150,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
       = G4SDManager::GetSDMpointer()->GetCollectionID("AbsHitsCollection");
     fActHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection");
-    fBgoHCID 
-      = G4SDManager::GetSDMpointer()->GetCollectionID("BgoHitsCollection");
+//    fBgoHCID 
+//      = G4SDManager::GetSDMpointer()->GetCollectionID("BgoHitsCollection");
     fFibrHCIDCore 
       = G4SDManager::GetSDMpointer()->GetCollectionID("FibrHitsCollectionCore");
     fFibrHCIDClad 
@@ -179,7 +179,7 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   // Get hit with total values
   EEShashCalorHit* absHit = (*absHC)[absHC->entries()-1];
   EEShashCalorHit* actHit = (*actHC)[actHC->entries()-1];
-  EEShashCalorHit* bgoHit = (*bgoHC)[bgoHC->entries()-1];
+  //  EEShashCalorHit* bgoHit = (*bgoHC)[bgoHC->entries()-1];
   EEShashCalorHit* fibrHitCore = (*fibrHCCore)[fibrHCCore->entries()-1];
   EEShashCalorHit* fibrHitClad = (*fibrHCClad)[fibrHCClad->entries()-1];
   // EEShashCalorHit* scint1Hit = (*scint1HC)[scint1HC->entries()-1];
@@ -198,7 +198,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
     PrintEventStatistics(
       absHit->GetEdep(), absHit->GetTrackLength(),
       actHit->GetEdep(), actHit->GetTrackLength(),
-      bgoHit->GetEdep(), bgoHit->GetTrackLength(),
+      //      bgoHit->GetEdep(), bgoHit->GetTrackLength(),
+      0,0,
       fibrHitCore->GetEdep(), fibrHitCore->GetTrackLength(),
       fibrHitClad->GetEdep(), fibrHitClad->GetTrackLength());
     G4cout << "------------------------------------" << G4endl;     
@@ -226,7 +227,7 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   int placeHolder=0;
   analysisManager->FillNtupleDColumn(0, absHit->GetEdep());
   analysisManager->FillNtupleDColumn(1, actHit->GetEdep());
-  analysisManager->FillNtupleDColumn(2, bgoHit->GetEdep());
+  analysisManager->FillNtupleDColumn(2, 0);
   analysisManager->FillNtupleDColumn(3, fibrHitCore->GetEdep());
   analysisManager->FillNtupleDColumn(4, fibrHitClad->GetEdep());  
   // analysisManager->FillNtupleDColumn(4, scint1Hit->GetEdep());
@@ -250,13 +251,14 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   // nBGOs should be defined only once in main
   //int nBGOs = bgoHC->entries()-1; // the last hit is the total energy
 
-  analysisManager->FillNtupleIColumn(placeHolder, nBGOs);
-  placeHolder++;
-  for( unsigned i=0; i<nBGOs; ++i ) {
-    EEShashCalorHit* bgoHit_i = (*bgoHC)[i];
-    analysisManager->FillNtupleDColumn(placeHolder+i, bgoHit_i->GetEdep());
-  }
-  placeHolder=placeHolder+nBGOs;
+  //  analysisManager->FillNtupleIColumn(placeHolder, nBGOs);
+  //  placeHolder++;
+  //  for( unsigned i=0; i<nBGOs; ++i ) {
+    //    EEShashCalorHit* bgoHit_i = (*bgoHC)[i];
+    //    analysisManager->FillNtupleDColumn(placeHolder+i, bgoHit_i->GetEdep());
+  //    analysisManager->FillNtupleDColumn(placeHolder+i, 0.);
+  //  }
+  //  placeHolder=placeHolder+nBGOs;
 
   // nFibres should be defined only once in main
   //int nfibrs = fibrHCCore->entries()-1; // the last hit is the total energy
@@ -298,23 +300,18 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   analysisManager->AddNtupleRow();  
 
   CreateTree::Instance() -> Event = event->GetEventID();
-  CreateTree::Instance() -> EOpt_0 = EOpt_0;
   CreateTree::Instance() -> nLayers = nLayers;
 
   for( unsigned i=0; i<nLayers; ++i ) {
     EEShashCalorHit* actHit_i = (*actHC)[i];
-    CreateTree::Instance() -> Eact_layer.push_back(actHit_i->GetEdep());
+    //    CreateTree::Instance() -> Eact_layer.push_back(actHit_i->GetEdep());
   }
 
   CreateTree::Instance() -> Eabs = absHit->GetEdep();
   CreateTree::Instance() -> Eact = actHit->GetEdep();
 
-  CreateTree::Instance() -> EfibrCore =  fibrHitCore->GetEdep();
-  CreateTree::Instance() -> EfibrClad =  fibrHitClad->GetEdep();
 
-  CreateTree::Instance() -> Fibre_0 = fibre0;
-  CreateTree::Instance() -> NPhot_Act = NPhotAct;
-  CreateTree::Instance() -> Fibre_start_0 = fibreStart0;
+
   CreateTree::Instance() -> xPosition = xBeamPos;
   CreateTree::Instance() -> yPosition = yBeamPos;
 

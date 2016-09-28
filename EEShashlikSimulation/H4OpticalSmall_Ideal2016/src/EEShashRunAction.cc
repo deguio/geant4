@@ -175,7 +175,15 @@ void EEShashRunAction::BeginOfRunAction(const G4Run* /*run*/)
   //
   G4String fileName;
 
-  fileName = "EEShash";
+  // If this run is part of a job, store it in a separate ROOT file
+  if ((std::getenv("JOB_ID")) && (std::getenv("JOB_OUTDIR"))) {
+    G4String JOBID = std::getenv("JOB_ID");
+    G4String JOBOUTDIR = std::getenv("JOB_OUTDIR");
+    fileName = JOBOUTDIR + "out.root";
+    }
+
+  // Else, just store as it as the default output file
+  else fileName = "EEShash";
 
   std::cout << "Using fileName: " << fileName << G4endl;
 

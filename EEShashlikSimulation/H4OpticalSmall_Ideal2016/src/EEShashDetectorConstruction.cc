@@ -1648,7 +1648,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   int totalCopies = 25;
 
   for( int ix=-2; ix<=2; ++ix ) {
-    for( int iy=-2; iy<=2; ++iy ) {
+    for( int iy=-1; iy<=1; ++iy ) {
       if( ix==0 && iy==0 ) continue;  // central channel is the shash
 
       if( copyNumber>=totalCopies ) {

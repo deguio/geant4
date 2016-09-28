@@ -174,18 +174,11 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
     */
 
 	EOpt_0+=theTrack->GetTotalEnergy()/eV;
-	CreateTree::Instance() -> Time_deposit.push_back(theTrack->GetGlobalTime()/nanosecond);
 	G4ThreeVector directionStart=theTrack->GetVertexPosition();//position at start point
-	CreateTree::Instance() -> Z_deposit.push_back(directionStart.z()/mm);
-	CreateTree::Instance() -> Theta_deposit.push_back(directionStart.theta());
 	if(processName=="OpWLS"){
-	  CreateTree::Instance() -> Process_deposit.push_back(1);
 	}else if(processName=="Scintillation"){
-	  CreateTree::Instance() -> Process_deposit.push_back(2);
 	}else if(processName=="Cerenkov"){
-	  CreateTree::Instance() -> Process_deposit.push_back(3);
 	}else{
-	  CreateTree::Instance() -> Process_deposit.push_back(-1);
 	}
 
 	fibre0 += 1;
