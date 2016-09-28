@@ -5,6 +5,7 @@
 #include "Math/Interpolator.h"
 #include "TVirtualFFT.h"
 #include "TComplex.h"
+#include "TRandom3.h"
 
 #include "TH1.h"
 
@@ -34,10 +35,9 @@ class WaveformNew
 
   //multiply two waveforms in time domain
   void multiply(WaveformNew*  wave);
-  //multiply fft of two waveforms
-  //  void multiply_fft(WaveformNew*  wave);//FIXME implement correctly
 
-
+  //simulate uncorrelated noise on each sample
+  void addUncorrNoise(float noise);
   
   struct max_amplitude_informations
   {
