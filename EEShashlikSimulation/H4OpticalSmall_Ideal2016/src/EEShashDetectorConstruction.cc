@@ -885,7 +885,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
  G4VPhysicalVolume* ActPV2 = new G4PVPlacement(
                  0,                // no rotation
                  G4ThreeVector(0., 0., absThickness/2.), // its position
-                 actLV,            // its logical volume                         
+                 actLV2,            // its logical volume                         
                  "ActPV2",            // its name
                  layerLV2,          // its mother  volume
                  false,            // no boolean operation
