@@ -33,7 +33,7 @@
 // Better to set these here to prevent problems with ROOT branch creation and filling
 #include <vector>
 int nLayers = 12; 
-int nBGOs = 24;
+int nBGOs = 0;
 int nFibres = 0;
 
 int nPhotonsForTiming=100;

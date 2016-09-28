@@ -1584,64 +1584,64 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // BGO
   //  
 
-//  G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(0,0,0));
-//  simpleBoxVisAtt->SetVisibility(true);
-//  //matrixLV->SetVisAttributes(simpleBoxVisAtt);
-//  calorLV->SetVisAttributes(simpleBoxVisAtt);
-//
-//  // create the matrix:
-//
-//  int copyNumber = 0;
-//  int totalCopies = fNofBGOs;
-//
-//  G4VSolid* bgoS 
-//     = new G4Box("BGOChannel",     // its name
-//                calorSizeXY/2, calorSizeXY/2, bgoLength/2); // its size
-//                         
-//  G4LogicalVolume* bgoLV 
-//     = new G4LogicalVolume(
-//                bgoS,     // its solid
-//                bgoMaterial,  // its material
-//                "BGOLV");   // its name
-//
-//  bgoLV->SetVisAttributes(simpleBoxVisAtt);
-//                                       
-//
-//  for( int ix=-2; ix<=2; ++ix ) {
-//
-//    for( int iy=-2; iy<=2; ++iy ) {
-//
-//
-//      if( ix==0 && iy==0 ) continue;  // central channel is the shash
-//
-//      if( copyNumber>=totalCopies ) {
-//        std::cout << "--> ERROR!! Trying to instantiate a number of copies which exceeds totalCopies (=" << totalCopies << std::endl;
-//        std::cout << " Exiting." << std::endl;
-//        exit(11);
-//      }
-//
-//
-//      G4double zPos = (bgoLength-calorThickness)/2.;
-//      G4double miniGap = 1.5*mm;
-//      G4double xPos = ix*(calorSizeXY + miniGap) ;
-//      G4double yPos = iy*(calorSizeXY + miniGap) + sin(fRotation*3.14159265359/180.)*( zPos + fZtraslation) ;
-//
-//
-//      new G4PVPlacement(
-//                     rotation,                // no rotation
-//                     G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap))),  // at (0,0,0)
-//                     bgoLV,          // its logical volume                         
-//                     "BGOChannel",    // its name
-//                     labLV,          // its mother  volume
-//                     false,            // no boolean operation
-//                     copyNumber,                // copy number
-//                     fCheckOverlaps);  // checking overlaps 
-//
-//
-//      copyNumber += 1;
-//
-//    }
-//  }
+  G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(0,0,0));
+  simpleBoxVisAtt->SetVisibility(true);
+  //matrixLV->SetVisAttributes(simpleBoxVisAtt);
+  calorLV->SetVisAttributes(simpleBoxVisAtt);
+
+  // create the matrix:
+
+  int copyNumber = 0;
+  int totalCopies = fNofBGOs;
+
+  G4VSolid* bgoS 
+     = new G4Box("BGOChannel",     // its name
+                calorSizeXY/2, calorSizeXY/2, bgoLength/2); // its size
+                         
+  G4LogicalVolume* bgoLV 
+     = new G4LogicalVolume(
+                bgoS,     // its solid
+                bgoMaterial,  // its material
+                "BGOLV");   // its name
+
+  bgoLV->SetVisAttributes(simpleBoxVisAtt);
+                                       
+
+  for( int ix=-2; ix<=2; ++ix ) {
+
+    for( int iy=-2; iy<=2; ++iy ) {
+
+
+      if( ix==0 && iy==0 ) continue;  // central channel is the shash
+
+      if( copyNumber>=totalCopies ) {
+        std::cout << "--> ERROR!! Trying to instantiate a number of copies which exceeds totalCopies (=" << totalCopies << std::endl;
+        std::cout << " Exiting." << std::endl;
+        exit(11);
+      }
+
+
+      G4double zPos = (bgoLength-calorThickness)/2.;
+      G4double miniGap = 1.5*mm;
+      G4double xPos = ix*(calorSizeXY + miniGap) ;
+      G4double yPos = iy*(calorSizeXY + miniGap) + sin(fRotation*3.14159265359/180.)*( zPos + fZtraslation) ;
+
+
+      new G4PVPlacement(
+                     rotation,                // no rotation
+                     G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap))),  // at (0,0,0)
+                     bgoLV,          // its logical volume                         
+                     "BGOChannel",    // its name
+                     labLV,          // its mother  volume
+                     false,            // no boolean operation
+                     copyNumber,                // copy number
+                     fCheckOverlaps);  // checking overlaps 
+
+
+      copyNumber += 1;
+
+    }
+  }
       
 
   //
