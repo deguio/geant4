@@ -760,20 +760,32 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
     = new G4LogicalVolume(
                  calorimeterS,     // its solid
                  defaultMaterial,  // its material
-                 "Calorimeter");   // its name
+                 "Calorimeter2");   // its name
     
 
 
                              
+//  new G4PVPlacement(
+//                 rotation,                // no rotation
+//                 G4ThreeVector(0., sin(fRotation*3.14159265359/180.)*calorThickness/2 ,  cos(-fRotation*3.14159265359/180.)* calorThickness/2.),  // its position
+//                 calorLV,          // its logical volume                         
+//                 "Calorimeter",    // its name
+//                 labLV,          // its mother  volume
+//                 false,            // no boolean operation
+//                 0,                // copy number
+//                 fCheckOverlaps);  // checking overlaps 
+
+  //test
   new G4PVPlacement(
                  rotation,                // no rotation
                  G4ThreeVector(0., sin(fRotation*3.14159265359/180.)*calorThickness/2 ,  cos(-fRotation*3.14159265359/180.)* calorThickness/2.),  // its position
-                 calorLV,          // its logical volume                         
-                 "Calorimeter",    // its name
+                 calorLV2,          // its logical volume                         
+                 "Calorimeter2",    // its name
                  labLV,          // its mother  volume
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
+
    
   //                                 
   // Layer
