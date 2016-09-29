@@ -856,6 +856,24 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
+   //test
+  G4LogicalVolume* absLV2
+    = new G4LogicalVolume(
+                 absS,        // its solid
+                 absMaterial, // its material
+                 "AbsLV2");        // its name
+                                   
+   new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(0., 0., -actThickness/2 -tyvekThickness), // its position
+                 absLV2,       // its logical volume                         
+                 "Abs2",           // its name
+                 layerLV2,          // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+
+
 
   //                               
   // Active Material
