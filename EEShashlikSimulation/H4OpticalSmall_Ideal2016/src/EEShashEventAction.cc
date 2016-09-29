@@ -316,7 +316,7 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   CreateTree::Instance() -> Eabs = absHit->GetEdep();
   CreateTree::Instance() -> Eact = actHit->GetEdep();
 
-  std::cout<<"dajeeeeee calor"<<calorHit->GetEdep()<<std::endl;
+  CreateTree::Instance() -> Eact_CentralXtal=calorHit->GetEdep();
 
 
   CreateTree::Instance() -> xPosition = xBeamPos;

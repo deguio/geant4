@@ -22,8 +22,8 @@ CreateTree::CreateTree(TString name)
   this->GetTree()->Branch("Eabs",&this->Eabs,"Eabs/F");
   this->GetTree()->Branch("Eact",&this->Eact,"Eact/F");
 
-  this->GetTree()->Branch("Eabs_xtal",&this->Eabs_xtal);
-  this->GetTree()->Branch("Eact_xtal",&this->Eact_xtal);
+  this->GetTree()->Branch("Eabs_CentralXtal",&this->Eabs_CentralXtal,"Eabs_CentralXtal");
+  this->GetTree()->Branch("Eact_CentralXtal",&this->Eact_CentralXtal,"Eact_CentralXtal");
 
   this->GetTree()->Branch("nLayers",&this->nLayers,"nLayers/I");
 
@@ -59,7 +59,7 @@ void CreateTree::Clear()
   xPosition=0;
   yPosition=0;
   
-  Eact_xtal.clear();
-  Eabs_xtal.clear();
+  Eact_CentralXtal=0.;
+  Eabs_CentralXtal=0.;
 
 }
