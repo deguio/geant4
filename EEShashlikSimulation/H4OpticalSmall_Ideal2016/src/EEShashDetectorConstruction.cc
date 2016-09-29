@@ -1747,7 +1747,20 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
       G4double yPos = iy*(calorSizeXY + miniGap) + sin(fRotation*3.14159265359/180.)*( zPos + fZtraslation) ;
       G4double yPosPom = iy*(calorSizeXY + miniGap) + sin(fRotation*3.14159265359/180.)*sqrt( (zPos + fZtraslation -calorThickness/2.- pompomLength/2.)*(zPos + fZtraslation -calorThickness/2.- pompomLength/2.) + xPos*xPos) ;
 
-      if(iy!=0 && ix!=1){
+      if(iy==0 && ix==1){
+	new G4PVPlacement(
+			  rotation,                // rotation
+			  G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
+			  calorLV2,          // its logical volume                         
+			  "Calorimeter2",    // its name
+			  labLV,          // its mother  volume
+			  false,            // no boolean operation
+			  0,                // copy number
+			  fCheckOverlaps);  // checking overlaps 
+
+
+
+      }else{
 	new G4PVPlacement(
 			  rotation,                // rotation
 			  G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
@@ -1767,17 +1780,6 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 			  false,            // no boolean operation
 			  0,                // copy number
 			  fCheckOverlaps);  // checking overlaps 
-      }else{
-	new G4PVPlacement(
-			  rotation,                // rotation
-			  G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
-			  calorLV2,          // its logical volume                         
-			  "Calorimeter2",    // its name
-			  labLV,          // its mother  volume
-			  false,            // no boolean operation
-			  0,                // copy number
-			  fCheckOverlaps);  // checking overlaps 
-
 
       }
 
