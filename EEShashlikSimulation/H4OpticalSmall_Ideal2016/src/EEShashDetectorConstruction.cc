@@ -964,6 +964,29 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
+  //test
+  G4VPhysicalVolume* TyvekLayerPV1_2 = new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(0., 0., actThickness/2.+absThickness/2. + tyvekThickness/2.), // its position
+                 tyvekLV,            // its logical volume                         
+                 "TyvekLayerPV1_2",            // its name
+                 layerLV2,          // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+
+
+  G4VPhysicalVolume* TyvekLayerPV2_2 =   new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(0., 0.,  (absThickness-actThickness)/2. +tyvekThickness/2. -tyvekThickness), // its position
+                 tyvekLV,            // its logical volume                         
+                 "TyvekLayerPV2_2",            // its name
+                 layerLV2,          // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+
+
 
 
   //Optical Grease at end of fibre:
@@ -1753,6 +1776,16 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 			  G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
 			  calorLV2,          // its logical volume                         
 			  "Calorimeter2",    // its name
+			  labLV,          // its mother  volume
+			  false,            // no boolean operation
+			  0,                // copy number
+			  fCheckOverlaps);  // checking overlaps 
+
+	new G4PVPlacement(
+			  rotation,                // no rotation
+                     G4ThreeVector(xPos, yPosPom, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation -calorThickness/2.- pompomLength/2.)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
+			  PompomLV,            // its logical volume                         
+			  "Pompom",            // its name
 			  labLV,          // its mother  volume
 			  false,            // no boolean operation
 			  0,                // copy number
