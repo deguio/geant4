@@ -233,89 +233,14 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   analysisManager->FillH1(3, absHit->GetTrackLength());
   analysisManager->FillH1(4, actHit->GetTrackLength());
   
-  // fill ntuple
-  int placeHolder=0;
-  analysisManager->FillNtupleDColumn(0, absHit->GetEdep());
-  analysisManager->FillNtupleDColumn(1, actHit->GetEdep());
-  analysisManager->FillNtupleDColumn(2, 0);
-  analysisManager->FillNtupleDColumn(3, fibrHitCore->GetEdep());
-  analysisManager->FillNtupleDColumn(4, fibrHitClad->GetEdep());  
-  // analysisManager->FillNtupleDColumn(4, scint1Hit->GetEdep());
-  // analysisManager->FillNtupleDColumn(5, hodo11Hit->GetEdep());
-  // analysisManager->FillNtupleDColumn(6, hodo12Hit->GetEdep());
-  //analysisManager->FillNtupleDColumn(2, absHit->GetTrackLength());
-  //analysisManager->FillNtupleDColumn(3, actHit->GetTrackLength());
-  placeHolder=5;  
-
-  // nLayers should be defined only once in main
-  //int nLayers = actHC->entries()-1; // the last hit is the total energy
-
-  analysisManager->FillNtupleIColumn(placeHolder, nLayers);
-  placeHolder++;
-  for( unsigned i=0; i<nLayers; ++i ) {
-    EEShashCalorHit* actHit_i = (*actHC)[i];
-    analysisManager->FillNtupleDColumn(placeHolder+i, actHit_i->GetEdep());
-  }
-  placeHolder=placeHolder+nLayers;
-
-  // nBGOs should be defined only once in main
-  //int nBGOs = bgoHC->entries()-1; // the last hit is the total energy
-
-  //  analysisManager->FillNtupleIColumn(placeHolder, nBGOs);
-  //  placeHolder++;
-  //  for( unsigned i=0; i<nBGOs; ++i ) {
-    //    EEShashCalorHit* bgoHit_i = (*bgoHC)[i];
-    //    analysisManager->FillNtupleDColumn(placeHolder+i, bgoHit_i->GetEdep());
-  //    analysisManager->FillNtupleDColumn(placeHolder+i, 0.);
-  //  }
-  //  placeHolder=placeHolder+nBGOs;
-
-  // nFibres should be defined only once in main
-  //int nfibrs = fibrHCCore->entries()-1; // the last hit is the total energy
-
-  analysisManager->FillNtupleIColumn(placeHolder, nFibres);
-  placeHolder++;
-  for( unsigned i=0; i<nFibres; ++i ) {
-    EEShashCalorHit* fibrHitCore_i = (*fibrHCCore)[i];
-    analysisManager->FillNtupleDColumn(placeHolder+i, fibrHitCore_i->GetEdep());
-  }
-  placeHolder=placeHolder+nFibres;
-  
-  analysisManager->FillNtupleDColumn(placeHolder++, fibre0  );
-  analysisManager->FillNtupleDColumn(placeHolder++, fibre1  );
-  analysisManager->FillNtupleDColumn(placeHolder++, fibre2  );
-  analysisManager->FillNtupleDColumn(placeHolder++, fibre3  );
-   
 
   std::cout << "xPosition = " << xBeamPos << std::endl;
-  analysisManager->FillNtupleDColumn(placeHolder++, xBeamPos  );
   std::cout << "yPosition = " << yBeamPos << std::endl;
-  analysisManager->FillNtupleDColumn(placeHolder++, yBeamPos  );
 
-  std::cout << "EOpt_0    = " << EOpt_0 << std::endl;
-  std::cout << "EOpt_1    = " << EOpt_1 << std::endl;
-  std::cout << "EOpt_2    = " << EOpt_2 << std::endl;
-  std::cout << "EOpt_3    = " << EOpt_3 << std::endl;
-
-  analysisManager->FillNtupleDColumn(placeHolder++, EOpt_0  );
-  analysisManager->FillNtupleDColumn(placeHolder++, EOpt_1  );
-  analysisManager->FillNtupleDColumn(placeHolder++, EOpt_2  );
-  analysisManager->FillNtupleDColumn(placeHolder++, EOpt_3  );
-
-  std::cout<<"filling time"<<std::endl;
-  for(unsigned i=0;i<nPhotonsForTiming;++i){
-    analysisManager->FillNtupleDColumn(placeHolder++,time_vector[i]);//FIXME put here what to fill
-  }
-
-  analysisManager->AddNtupleRow();  
 
   CreateTree::Instance() -> Event = event->GetEventID();
   CreateTree::Instance() -> nLayers = nLayers;
 
-  for( unsigned i=0; i<nLayers; ++i ) {
-    EEShashCalorHit* actHit_i = (*actHC)[i];
-    //    CreateTree::Instance() -> Eact_layer.push_back(actHit_i->GetEdep());
-  }
 
   CreateTree::Instance() -> Eabs = absHit->GetEdep();
   CreateTree::Instance() -> Eact = actHit->GetEdep();

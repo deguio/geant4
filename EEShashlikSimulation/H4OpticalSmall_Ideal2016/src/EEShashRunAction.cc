@@ -88,68 +88,7 @@ EEShashRunAction::EEShashRunAction( )
   analysisManager->CreateH1("trkl_abs","trackL in absorber", 100, 0., 1*m);
   analysisManager->CreateH1("trkl_act","trackL in active", 100, 0., 50*cm);
 
-  // Creating ntuple
-  //
-  analysisManager->CreateNtuple("EEShash", "Edep and TrackL");
-  analysisManager->CreateNtupleDColumn("Eabs");
-  analysisManager->CreateNtupleDColumn("Eact");
-  analysisManager->CreateNtupleDColumn("Ebgo");
-  analysisManager->CreateNtupleDColumn("EfibrCore");
-  analysisManager->CreateNtupleDColumn("EfibrClad");
-  //  analysisManager->CreateNtupleDColumn("Escint1");
-  // analysisManager->CreateNtupleDColumn("Ehodo11");
-  // analysisManager->CreateNtupleDColumn("Ehodo12");
-  //analysisManager->CreateNtupleDColumn("Labs");
-  //analysisManager->CreateNtupleDColumn("Lact");
 
-
-  analysisManager->CreateNtupleIColumn("nLayers");
-  // didnt find an easier way to do this
-  for( unsigned i=0; i<nLayers; ++i ){
-    analysisManager->CreateNtupleDColumn(Form("Eact_%d", i));
-  }
-
-  analysisManager->CreateNtupleIColumn("nBGOs");
-  for( unsigned i=0; i<nBGOs; ++i ){
-    analysisManager->CreateNtupleDColumn(Form("Ebgo_%d", i));
-  }
-  analysisManager->CreateNtupleIColumn("nFibers");
-  for( unsigned i=0; i<nFibres; ++i )
-    analysisManager->CreateNtupleDColumn(Form("EFiber_%d", i));
-
-  analysisManager->CreateNtupleDColumn("Fibre0");
-  analysisManager->CreateNtupleDColumn("Fibre1");
-  analysisManager->CreateNtupleDColumn("Fibre2");
-  analysisManager->CreateNtupleDColumn("Fibre3");
-
-  analysisManager->CreateNtupleDColumn("xPosition");
-  analysisManager->CreateNtupleDColumn("yPosition");
- 
-  analysisManager->CreateNtupleDColumn("EOpt_0");
-  analysisManager->CreateNtupleDColumn("EOpt_1");
-  analysisManager->CreateNtupleDColumn("EOpt_2");
-  analysisManager->CreateNtupleDColumn("EOpt_3");  
-
-  std::cout<<"--------creating time for "<<nPhotonsForTiming<<std::endl;
-  for(unsigned i=0;i<nPhotonsForTiming;++i){//nPhotonsForTiming defined in common.h
-    analysisManager->CreateNtupleDColumn(Form("Time_deposit_%d",i));
-  }  
-
-  //  analysisManager->CreateNtupleXColumn("Time_deposit", std::vector<float> Time_deposit);
-
-  analysisManager->FinishNtuple();
-
-
-//hitsFile_ = TFile::Open("hits.root", "RECREATE");
-//hitsFile_->cd();
-
-//// fuck the system, use a simple TTree*
-//hitsTree_ = new TTree("hitsTree", "");
-
-//for( unsigned i=0; i<nLayers_; ++i ) {
-//  EactLayer_[i] = 0.;
-//  LYLayer_[i] = 1.;
-//}
   
 
 }
@@ -165,34 +104,10 @@ EEShashRunAction::~EEShashRunAction()
 
 void EEShashRunAction::BeginOfRunAction(const G4Run* /*run*/)
 { 
-  //inform the runManager to save random number seed
-  //G4RunManager::GetRunManager()->SetRandomNumberStore(true);
   
   // Get analysis manager
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
-  // Open an output file
-  //
-  G4String fileName;
-
-  // If this run is part of a job, store it in a separate ROOT file
-  if ((std::getenv("JOB_ID")) && (std::getenv("JOB_OUTDIR"))) {
-    G4String JOBID = std::getenv("JOB_ID");
-    G4String JOBOUTDIR = std::getenv("JOB_OUTDIR");
-    fileName = JOBOUTDIR + "out.root";
-    }
-
-  // Else, just store as it as the default output file
-  else fileName = "EEShash";
-
-  std::cout << "Using fileName: " << fileName << G4endl;
-
-  //  G4String fileName = "EEShash_cosmics";
-  analysisManager->OpenFile(fileName);
-
-  //hitsTree_->Branch( "nLayers", &nLayers_, "nLayers/I" );
-  //hitsTree_->Branch( "EactLayer_", EactLayer_, "EactLayer[nLayers]/F" );
-  //hitsTree_->Branch( "LYLayer_", LYLayer_, "LYLayer[nLayers]/F" );
 
   std::cout << "EEShashRunAction::BeginOfRunAction() finished. Event creation starting." << G4endl;
 }
@@ -234,14 +149,7 @@ void EEShashRunAction::EndOfRunAction(const G4Run* /*run*/)
       << G4BestUnit(analysisManager->GetH1(4)->rms(),  "Length") << G4endl;
   }
 
-  // save histograms & ntuple
-  //
-  analysisManager->Write();
-  analysisManager->CloseFile();
 
-  //hitsFile_->cd();
-  //hitsTree_->Write();
-  //hitsFile_->Close();
 
 }
 
