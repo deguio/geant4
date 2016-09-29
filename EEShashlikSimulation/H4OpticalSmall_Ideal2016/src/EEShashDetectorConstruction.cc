@@ -756,6 +756,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  defaultMaterial,  // its material
                  "Calorimeter");   // its name
 
+  //single channel for which we want a different collection of hits
   G4LogicalVolume* calorLV2
     = new G4LogicalVolume(
                  calorimeterS,     // its solid
@@ -765,26 +766,26 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
 
                              
-//  new G4PVPlacement(
-//                 rotation,                // no rotation
-//                 G4ThreeVector(0., sin(fRotation*3.14159265359/180.)*calorThickness/2 ,  cos(-fRotation*3.14159265359/180.)* calorThickness/2.),  // its position
-//                 calorLV,          // its logical volume                         
-//                 "Calorimeter",    // its name
-//                 labLV,          // its mother  volume
-//                 false,            // no boolean operation
-//                 0,                // copy number
-//                 fCheckOverlaps);  // checking overlaps 
-
-  //test
   new G4PVPlacement(
                  rotation,                // no rotation
                  G4ThreeVector(0., sin(fRotation*3.14159265359/180.)*calorThickness/2 ,  cos(-fRotation*3.14159265359/180.)* calorThickness/2.),  // its position
-                 calorLV2,          // its logical volume                         
-                 "Calorimeter2",    // its name
+                 calorLV,          // its logical volume                         
+                 "Calorimeter",    // its name
                  labLV,          // its mother  volume
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
+
+  //test
+//  new G4PVPlacement(
+//                 rotation,                // no rotation
+//                 G4ThreeVector(0., sin(fRotation*3.14159265359/180.)*calorThickness/2 ,  cos(-fRotation*3.14159265359/180.)* calorThickness/2.),  // its position
+//                 calorLV2,          // its logical volume                         
+//                 "Calorimeter2",    // its name
+//                 labLV,          // its mother  volume
+//                 false,            // no boolean operation
+//                 0,                // copy number
+//                 fCheckOverlaps);  // checking overlaps 
 
    
   //                                 
@@ -812,13 +813,14 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  defaultMaterial,  // its material
                  "Layer");         // its name
 
-//  new G4PVReplica(
-//                 "Layer",          // its name
-//                 layerLV,          // its logical volume
-//                 calorLV,          // its mother
-//                 kZAxis,           // axis of replication
-//                 fNofLayers,        // number of replica
-//                 layerThickness);  // width of replica
+  new G4PVReplica(
+                 "Layer",          // its name
+                 layerLV,          // its logical volume
+                 calorLV,          // its mother
+                 kZAxis,           // axis of replication
+                 fNofLayers,        // number of replica
+                 layerThickness);  // width of replica
+
   //test
   new G4PVReplica(
                  "Layer",          // its name
@@ -1745,25 +1747,40 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
       G4double yPos = iy*(calorSizeXY + miniGap) + sin(fRotation*3.14159265359/180.)*( zPos + fZtraslation) ;
       G4double yPosPom = iy*(calorSizeXY + miniGap) + sin(fRotation*3.14159265359/180.)*sqrt( (zPos + fZtraslation -calorThickness/2.- pompomLength/2.)*(zPos + fZtraslation -calorThickness/2.- pompomLength/2.) + xPos*xPos) ;
 
-      new G4PVPlacement(
-                     rotation,                // rotation
-                     G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
-                     calorLV,          // its logical volume                         
-                     "Calorimeter",    // its name
-                     labLV,          // its mother  volume
-                     false,            // no boolean operation
-                     copyNumber,                // copy number
-                     fCheckOverlaps);  // checking overlaps 
-
-     new G4PVPlacement(
-                     rotation,                // no rotation
+      if(iy!=0 && ix!=1){
+	new G4PVPlacement(
+			  rotation,                // rotation
+			  G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
+			  calorLV,          // its logical volume                         
+			  "Calorimeter",    // its name
+			  labLV,          // its mother  volume
+			  false,            // no boolean operation
+			  copyNumber,                // copy number
+			  fCheckOverlaps);  // checking overlaps 
+	
+	new G4PVPlacement(
+			  rotation,                // no rotation
                      G4ThreeVector(xPos, yPosPom, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation -calorThickness/2.- pompomLength/2.)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
-                     PompomLV,            // its logical volume                         
-                     "Pompom",            // its name
-                     labLV,          // its mother  volume
-                     false,            // no boolean operation
-                     0,                // copy number
-                     fCheckOverlaps);  // checking overlaps 
+			  PompomLV,            // its logical volume                         
+			  "Pompom",            // its name
+			  labLV,          // its mother  volume
+			  false,            // no boolean operation
+			  0,                // copy number
+			  fCheckOverlaps);  // checking overlaps 
+      }else{
+	new G4PVPlacement(
+			  rotation,                // rotation
+			  G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
+			  calorLV2,          // its logical volume                         
+			  "Calorimeter2",    // its name
+			  labLV,          // its mother  volume
+			  false,            // no boolean operation
+			  0,                // copy number
+			  fCheckOverlaps);  // checking overlaps 
+
+
+      }
+
 
       copyNumber += 1;
     }
