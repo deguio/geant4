@@ -150,7 +150,9 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
       = G4SDManager::GetSDMpointer()->GetCollectionID("AbsHitsCollection");
     fActHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection");
-    fCalorHCID 
+    fAbs2HCID 
+      = G4SDManager::GetSDMpointer()->GetCollectionID("AbsHitsCollection2");
+    fAct2HCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection2");
 //    fBgoHCID 
 //      = G4SDManager::GetSDMpointer()->GetCollectionID("BgoHitsCollection");
@@ -172,7 +174,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   EEShashCalorHitsCollection* absHC = GetHitsCollection(fAbsHCID, event);
   EEShashCalorHitsCollection* actHC = GetHitsCollection(fActHCID, event);
 
-  EEShashCalorHitsCollection* calorHC = GetHitsCollection(fCalorHCID, event);
+  EEShashCalorHitsCollection* Abs2HC = GetHitsCollection(fAbs2HCID, event);
+  EEShashCalorHitsCollection* Act2HC = GetHitsCollection(fAct2HCID, event);
   EEShashCalorHitsCollection* bgoHC = GetHitsCollection(fBgoHCID, event);
   EEShashCalorHitsCollection* fibrHCCore = GetHitsCollection(fFibrHCIDCore, event);
   EEShashCalorHitsCollection* fibrHCClad = GetHitsCollection(fFibrHCIDClad, event);
@@ -184,7 +187,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   EEShashCalorHit* absHit = (*absHC)[absHC->entries()-1];
   EEShashCalorHit* actHit = (*actHC)[actHC->entries()-1];
 
-  EEShashCalorHit* calorHit = (*calorHC)[calorHC->entries()-1];
+  EEShashCalorHit* Abs2Hit = (*Abs2HC)[Abs2HC->entries()-1];
+  EEShashCalorHit* Act2Hit = (*Act2HC)[Act2HC->entries()-1];
   //  EEShashCalorHit* bgoHit = (*bgoHC)[bgoHC->entries()-1];
   EEShashCalorHit* fibrHitCore = (*fibrHCCore)[fibrHCCore->entries()-1];
   EEShashCalorHit* fibrHitClad = (*fibrHCClad)[fibrHCClad->entries()-1];
@@ -316,7 +320,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   CreateTree::Instance() -> Eabs = absHit->GetEdep();
   CreateTree::Instance() -> Eact = actHit->GetEdep();
 
-  CreateTree::Instance() -> Eact_CentralXtal=calorHit->GetEdep();
+  CreateTree::Instance() -> Eabs_CentralXtal=Abs2Hit->GetEdep();
+  CreateTree::Instance() -> Eact_CentralXtal=Act2Hit->GetEdep();
 
 
   CreateTree::Instance() -> xPosition = xBeamPos;

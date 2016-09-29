@@ -776,17 +776,6 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
 
-  //test
-//  new G4PVPlacement(
-//                 rotation,                // no rotation
-//                 G4ThreeVector(0., sin(fRotation*3.14159265359/180.)*calorThickness/2 ,  cos(-fRotation*3.14159265359/180.)* calorThickness/2.),  // its position
-//                 calorLV2,          // its logical volume                         
-//                 "Calorimeter2",    // its name
-//                 labLV,          // its mother  volume
-//                 false,            // no boolean operation
-//                 0,                // copy number
-//                 fCheckOverlaps);  // checking overlaps 
-
    
   //                                 
   // Layer
@@ -806,7 +795,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  layerS,           // its solid
                  defaultMaterial,  // its material
                  "Layer");         // its name
-  //test
+  //central channel
   G4LogicalVolume* layerLV2
     = new G4LogicalVolume(
                  layerS,           // its solid
@@ -821,7 +810,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  fNofLayers,        // number of replica
                  layerThickness);  // width of replica
 
-  //test
+  //central channel
   new G4PVReplica(
                  "Layer",          // its name
                  layerLV2,          // its logical volume
@@ -858,7 +847,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
-   //test
+   //central channel
   G4LogicalVolume* absLV2
     = new G4LogicalVolume(
                  absS,        // its solid
@@ -894,7 +883,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  actS,             // its solid
                  actMaterial,      // its material
                  "ActLV");         // its name
-  //test
+  //central channel
   G4LogicalVolume* actLV2
     = new G4LogicalVolume(
                  actS,             // its solid
@@ -913,7 +902,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
 
-  //test
+  //central channel
  G4VPhysicalVolume* ActPV2 = new G4PVPlacement(
                  0,                // no rotation
                  G4ThreeVector(0., 0., absThickness/2.), // its position
@@ -964,7 +953,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
-  //test
+  //central channel
   G4VPhysicalVolume* TyvekLayerPV1_2 = new G4PVPlacement(
                  0,                // no rotation
                  G4ThreeVector(0., 0., actThickness/2.+absThickness/2. + tyvekThickness/2.), // its position
@@ -1631,14 +1620,14 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4VisAttributes* grayBox= new G4VisAttributes(G4Colour(0.5,0.5,0.5));
   grayBox->SetForceSolid(true);
   absLV->SetVisAttributes(grayBox);
-  //test
+  //central channel
   absLV2->SetVisAttributes(grayBox);
 
   G4VisAttributes* cyanBox= new G4VisAttributes(G4Colour(0,255,255));
   cyanBox->SetForceSolid(true);
   actLV->SetVisAttributes(cyanBox);
 
-  //test
+  //central channel
   actLV2->SetVisAttributes(cyanBox);
 
   G4VisAttributes* magentaBox= new G4VisAttributes(G4Colour(255,0,0));
@@ -1862,9 +1851,14 @@ void EEShashDetectorConstruction::ConstructSDandField()
     = new EEShashCalorimeterSD("ActSD", "ActHitsCollection", fNofLayers,1);
   SetSensitiveDetector("ActLV",actSD);
 
+  //central channel
   EEShashCalorimeterSD* actSD2 
     = new EEShashCalorimeterSD("ActSD2", "ActHitsCollection2", fNofLayers,1);
   SetSensitiveDetector("ActLV2",actSD2);
+
+  EEShashCalorimeterSD* absSD2 
+    = new EEShashCalorimeterSD("AbsSD2", "AbsHitsCollection2", fNofLayers,1);
+  SetSensitiveDetector("AbsLV2",absSD2);
 
   // then the surrounding BGO matrix:
 //  EEShashCalorimeterSD* bgoSD 
