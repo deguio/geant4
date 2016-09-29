@@ -1242,6 +1242,16 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                      0,                // copy number
                      fCheckOverlaps);  // checking overlaps 
 
+  G4VPhysicalVolume* TyvekCoverPV2 = new G4PVPlacement(
+                     rotation,                // no rotation
+                     G4ThreeVector(-calorSizeXY , 0,  cos(-fRotation*3.14159265359/180.)*( tyvekLength/2.) ), // its position
+                     TyvekCoverLV,            // its logical volume                         
+                     "TyvekCoverPV2",            // its name
+                     labLV,          // its mother  volume
+                     false,            // no boolean operation
+                     1,                // copy number
+                     fCheckOverlaps);  // checking overlaps 
+
 
   //
   // Hodoscope 
