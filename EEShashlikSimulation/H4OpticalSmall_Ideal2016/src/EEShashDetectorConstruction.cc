@@ -1604,10 +1604,15 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4VisAttributes* grayBox= new G4VisAttributes(G4Colour(0.5,0.5,0.5));
   grayBox->SetForceSolid(true);
   absLV->SetVisAttributes(grayBox);
+  //test
+  absLV2->SetVisAttributes(grayBox);
 
   G4VisAttributes* cyanBox= new G4VisAttributes(G4Colour(0,255,255));
   cyanBox->SetForceSolid(true);
   actLV->SetVisAttributes(cyanBox);
+
+  //test
+  actLV2->SetVisAttributes(cyanBox);
 
   G4VisAttributes* magentaBox= new G4VisAttributes(G4Colour(255,0,0));
   magentaBox->SetForceSolid(true);
