@@ -749,7 +749,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
         G4TwoVector(0.,0.), 1.);
   //= new G4Box("Calorimeter",     // its name
   //             calorSizeXY/2, calorSizeXY/2, calorThickness/2); // its size
-                         
+
+  //this is the 3x3 matrix around the central channel                         
   G4LogicalVolume* calorLV
     = new G4LogicalVolume(
                  calorimeterS,     // its solid
@@ -762,6 +763,13 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  calorimeterS,     // its solid
                  defaultMaterial,  // its material
                  "Calorimeter2");   // its name
+
+  //remaining channels (aka the three channels on the left)
+  G4LogicalVolume* calorLV3
+    = new G4LogicalVolume(
+                 calorimeterS,     // its solid
+                 defaultMaterial,  // its material
+                 "Calorimeter3");   // its name
     
 
 
@@ -795,12 +803,6 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  layerS,           // its solid
                  defaultMaterial,  // its material
                  "Layer");         // its name
-  //central channel
-  G4LogicalVolume* layerLV2
-    = new G4LogicalVolume(
-                 layerS,           // its solid
-                 defaultMaterial,  // its material
-                 "Layer");         // its name
 
   new G4PVReplica(
                  "Layer",          // its name
@@ -810,7 +812,14 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  fNofLayers,        // number of replica
                  layerThickness);  // width of replica
 
+
   //central channel
+  G4LogicalVolume* layerLV2
+    = new G4LogicalVolume(
+                 layerS,           // its solid
+                 defaultMaterial,  // its material
+                 "Layer");         // its name
+
   new G4PVReplica(
                  "Layer",          // its name
                  layerLV2,          // its logical volume
@@ -818,6 +827,24 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  kZAxis,           // axis of replication
                  fNofLayers,        // number of replica
                  layerThickness);  // width of replica
+
+
+  //remaining channels (aka the three channels on the left)
+  G4LogicalVolume* layerLV3
+    = new G4LogicalVolume(
+                 layerS,           // its solid
+                 defaultMaterial,  // its material
+                 "Layer");         // its name
+
+  new G4PVReplica(
+                 "Layer",          // its name
+                 layerLV3,          // its logical volume
+                 calorLV3,          // its mother
+                 kZAxis,           // axis of replication
+                 fNofLayers,        // number of replica
+                 layerThickness);  // width of replica
+
+
 
   
   //                               
@@ -865,6 +892,24 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  fCheckOverlaps);  // checking overlaps 
 
 
+  //remaining channels (aka the three channels on the left)
+  G4LogicalVolume* absLV3
+    = new G4LogicalVolume(
+                 absS,        // its solid
+                 absMaterial, // its material
+                 "AbsLV3");        // its name
+                                   
+   new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(0., 0., -actThickness/2 -tyvekThickness), // its position
+                 absLV3,       // its logical volume                         
+                 "Abs3",           // its name
+                 layerLV3,          // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+
+
 
   //                               
   // Active Material
@@ -877,21 +922,14 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
         G4TwoVector(0.,0.), 1.);
   //= new G4Box("Act",             // its name
   //             calorSizeXY/2, calorSizeXY/2, actThickness/2); // its size
-                         
+
+  //this is the 3x3 matrix around the central channel
   G4LogicalVolume* actLV
     = new G4LogicalVolume(
                  actS,             // its solid
                  actMaterial,      // its material
                  "ActLV");         // its name
-  //central channel
-  G4LogicalVolume* actLV2
-    = new G4LogicalVolume(
-                 actS,             // its solid
-                 actMaterial,      // its material
-                 "ActLV2");         // its name
-   
- 
-  
+
  G4VPhysicalVolume* ActPV = new G4PVPlacement(
                  0,                // no rotation
                  G4ThreeVector(0., 0., absThickness/2.), // its position
@@ -902,7 +940,14 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
 
+
   //central channel
+  G4LogicalVolume* actLV2
+    = new G4LogicalVolume(
+                 actS,             // its solid
+                 actMaterial,      // its material
+                 "ActLV2");         // its name
+
  G4VPhysicalVolume* ActPV2 = new G4PVPlacement(
                  0,                // no rotation
                  G4ThreeVector(0., 0., absThickness/2.), // its position
@@ -913,6 +958,27 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
 
+
+
+   
+  //remaining channels (aka the three channels on the left)
+ 
+  G4LogicalVolume* actLV3
+    = new G4LogicalVolume(
+                 actS,             // its solid
+                 actMaterial,      // its material
+                 "ActLV3");         // its name
+
+ G4VPhysicalVolume* ActPV3 = new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(0., 0., absThickness/2.), // its position
+                 actLV3,            // its logical volume                         
+                 "ActPV3",            // its name
+                 layerLV3,          // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+  
 
 
   //                               
@@ -975,6 +1041,27 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
 
+  //remaining channels (aka the three channels on the left)
+  G4VPhysicalVolume* TyvekLayerPV1_3 = new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(0., 0., actThickness/2.+absThickness/2. + tyvekThickness/2.), // its position
+                 tyvekLV,            // its logical volume                         
+                 "TyvekLayerPV1_3",            // its name
+                 layerLV3,          // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+
+
+  G4VPhysicalVolume* TyvekLayerPV2_3 =   new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(0., 0.,  (absThickness-actThickness)/2. +tyvekThickness/2. -tyvekThickness), // its position
+                 tyvekLV,            // its logical volume                         
+                 "TyvekLayerPV2_3",            // its name
+                 layerLV3,          // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
 
 
 
@@ -1622,6 +1709,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   absLV->SetVisAttributes(grayBox);
   //central channel
   absLV2->SetVisAttributes(grayBox);
+  //remaining channels (aka the three channels on the left)
+  absLV3->SetVisAttributes(grayBox);
 
   G4VisAttributes* cyanBox= new G4VisAttributes(G4Colour(0,255,255));
   cyanBox->SetForceSolid(true);
@@ -1629,6 +1718,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   //central channel
   actLV2->SetVisAttributes(cyanBox);
+  actLV3->SetVisAttributes(cyanBox);
 
   G4VisAttributes* magentaBox= new G4VisAttributes(G4Colour(255,0,0));
   magentaBox->SetForceSolid(true);
@@ -1772,19 +1862,9 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 			  0,                // copy number
 			  fCheckOverlaps);  // checking overlaps 
 
-	new G4PVPlacement(
-			  rotation,                // no rotation
-                     G4ThreeVector(xPos, yPosPom, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation -calorThickness/2.- pompomLength/2.)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
-			  PompomLV,            // its logical volume                         
-			  "Pompom",            // its name
-			  labLV,          // its mother  volume
-			  false,            // no boolean operation
-			  0,                // copy number
-			  fCheckOverlaps);  // checking overlaps 
-
-
-
       }else{
+
+	if(ix!=2){
 	new G4PVPlacement(
 			  rotation,                // rotation
 			  G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
@@ -1795,17 +1875,35 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 			  copyNumber,                // copy number
 			  fCheckOverlaps);  // checking overlaps 
 	
+	}else{
+
 	new G4PVPlacement(
-			  rotation,                // no rotation
-                     G4ThreeVector(xPos, yPosPom, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation -calorThickness/2.- pompomLength/2.)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
-			  PompomLV,            // its logical volume                         
-			  "Pompom",            // its name
+			  rotation,                // rotation
+			  G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
+			  calorLV3,          // its logical volume                         
+			  "Calorimeter",    // its name
 			  labLV,          // its mother  volume
 			  false,            // no boolean operation
-			  0,                // copy number
+			  copyNumber,                // copy number
 			  fCheckOverlaps);  // checking overlaps 
 
+
+	}
+
       }
+
+      //PomPom
+      new G4PVPlacement(
+			rotation,                // no rotation
+			G4ThreeVector(xPos, yPosPom, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation -calorThickness/2.- pompomLength/2.)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
+			PompomLV,            // its logical volume                         
+			"Pompom",            // its name
+			labLV,          // its mother  volume
+			false,            // no boolean operation
+			0,                // copy number
+			fCheckOverlaps);  // checking overlaps 
+
+
       //tyvek cover
       G4VPhysicalVolume* TyvekCoverPV = new G4PVPlacement(
 							  rotation,                // no rotation
@@ -1842,6 +1940,7 @@ void EEShashDetectorConstruction::ConstructSDandField()
   //
   //
   // First the actual Shashlik:
+  //3x3 matrix around central channel
   EEShashCalorimeterSD* absSD 
     = new EEShashCalorimeterSD("AbsSD", "AbsHitsCollection", fNofLayers,1);
   SetSensitiveDetector("AbsLV",absSD);
@@ -1859,6 +1958,16 @@ void EEShashDetectorConstruction::ConstructSDandField()
   EEShashCalorimeterSD* absSD2 
     = new EEShashCalorimeterSD("AbsSD2", "AbsHitsCollection2", fNofLayers,1);
   SetSensitiveDetector("AbsLV2",absSD2);
+
+  //remaining channels (aka the three channels on the left)
+  EEShashCalorimeterSD* actSD3 
+    = new EEShashCalorimeterSD("ActSD3", "ActHitsCollection3", fNofLayers,1);
+  SetSensitiveDetector("ActLV3",actSD3);
+
+  EEShashCalorimeterSD* absSD3 
+    = new EEShashCalorimeterSD("AbsSD3", "AbsHitsCollection3", fNofLayers,1);
+  SetSensitiveDetector("AbsLV3",absSD3);
+
 
   // then the surrounding BGO matrix:
 //  EEShashCalorimeterSD* bgoSD 
