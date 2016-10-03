@@ -1863,7 +1863,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       }else{
 
-	if(ix>0){
+	if(ix<0){
 	new G4PVPlacement(
 			  rotation,                // rotation
 			  G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
