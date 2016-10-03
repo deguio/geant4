@@ -778,7 +778,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  rotation,                // no rotation
                  G4ThreeVector(0., sin(fRotation*3.14159265359/180.)*calorThickness/2 ,  cos(-fRotation*3.14159265359/180.)* calorThickness/2.),  // its position
                  calorLV,          // its logical volume                         
-                 "Calorimeter3",    // its name
+                 "Calorimeter",    // its name
                  labLV,          // its mother  volume
                  false,            // no boolean operation
                  0,                // copy number
@@ -1881,7 +1881,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 			  rotation,                // rotation
 			  G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),
 			  calorLV3,          // its logical volume                         
-			  "Calorimeter",    // its name
+			  "Calorimeter3",    // its name
 			  labLV,          // its mother  volume
 			  false,            // no boolean operation
 			  copyNumber,                // copy number
