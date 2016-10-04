@@ -671,7 +671,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4Material* fibreCoreMaterial  = G4Material::GetMaterial("Polystyrene");
   G4Material* fibreCladMaterial  = G4Material::GetMaterial("PMMA");
 
-  //  G4Material* scintMaterial = G4Material::GetMaterial("PMMA");
+  G4Material* scintMaterial = G4Material::GetMaterial("PMMA");
   G4Material* hodoMaterial    = G4Material::GetMaterial("PMMA");
   G4Material* pompomMaterial = G4Material::GetMaterial("POM");
   G4Material* tyvekMaterial = G4Material::GetMaterial("HDPE");
@@ -1509,9 +1509,9 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
          << actThickness/mm << "mm of " << actMaterial->GetName() << " ] " 
          << "\n------------------------------------------------------------\n";
 
+  
+
   /*
-
-
   //
   //Scintillators 3
   //
@@ -1737,9 +1737,9 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                      0,                // copy number
                      fCheckOverlaps);  // checking overlaps 
 
-
-
   */
+
+  
 
 
   //                                        
