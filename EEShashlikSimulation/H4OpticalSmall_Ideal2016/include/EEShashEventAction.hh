@@ -68,6 +68,8 @@ private:
   G4int  fActHCID;
   G4int  fAct2HCID;
   G4int  fAbs2HCID;
+  G4int  fAct3HCID;
+  G4int  fAbs3HCID;
   G4int  fBgoHCID;
   G4int  fFibrHCIDCore;
   G4int  fFibrHCIDClad;

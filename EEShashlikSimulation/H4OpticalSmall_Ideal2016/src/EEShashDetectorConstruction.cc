@@ -606,6 +606,53 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4double hodoLength = 4.*mm;
   G4double hodoDistance = 30.*mm;
 
+  //Starting from the Calobox
+  //Scintillator 3 
+  G4double scint3SizeXY = 50.*mm;
+  G4double scint3Length = 10.*mm;
+  G4double scint3Distance = 2950.*mm;
+
+
+  // Hodoscope 11 
+  G4double hodo21Distance = (3000+1400+140+640.+110.+190.+130.)*mm;
+  //Hodoscope 12
+  G4double hodo22Distance = (3000+1400+140+640.+110.+190.+130+350.)*mm;
+
+
+  //The group of 3 scintillators
+  //Scint 21
+  G4double scint21SizeXY = 50.*mm;
+  G4double scint21Length = 5.*mm;
+  G4double scint21Distance = (3000+1400+140+640.)*mm;
+  //Scint 22 Tiny little scint
+  G4double scint22SizeXY = 10.*mm;
+  G4double scint22Length = 1.*mm;
+  G4double scint22Distance = (3000+1400+140+640.+110.)*mm;
+  //Scint 23 
+  G4double scint23SizeXY = 30.*mm;
+  G4double scint23Length = 3.*mm;
+  G4double scint23Distance = (3000+1400+140+640.+110.+190.)*mm;
+
+  //Last (or first hodo from beam) hodoscope? It's a scintillator, not readout
+  G4double hodo31SizeXY = 100.*mm;
+  G4double hodo31Length = 5.*mm;
+  G4double hodo31Distance = (3000+1400+140+640.+110.+190.+350.+530.+90.)*mm;  
+  G4double hodo32Distance = (3000+1400+140+640.+110.+190.+350.+530.+90.+1.+5.)*mm;
+
+ //Scintillator X (weird roundish on top, approxed as square) 
+  G4double scintXSizeXY = 50.*mm;
+  G4double scintXLength = 4.*mm;
+  G4double scintXDistance = (3000+1400+140+640.+110.+190.+130+350.+530.+1400.+1220.)*mm;
+
+  // Hodoscope 21 
+  G4double hodo11SizeXY = 30.*mm;
+  G4double hodo11Length = 2.*mm;
+  G4double hodo11Distance = 3130.*mm;
+  //Hodoscope 22
+  G4double hodo12Distance = 3490.*mm;
+
+
+
   // world:
   //G4double worldSizeXY = 20. * (5.*calorSizeXY);
   //G4double worldSizeZ  = 100. * (fibreLength); 
@@ -1863,7 +1910,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       }else{
 
-	if(ix<0){
+	if(ix<=0){
 	new G4PVPlacement(
 			  rotation,                // rotation
 			  G4ThreeVector(xPos, yPos, cos(-fRotation*3.14159265359/180.)*(zPos + fZtraslation)  - sin(fRotation*3.14159265359/180.)*( iy*(calorSizeXY + miniGap)) ),

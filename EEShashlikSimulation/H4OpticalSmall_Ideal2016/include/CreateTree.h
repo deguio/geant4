@@ -25,8 +25,12 @@ class CreateTree
   static CreateTree* fInstance;
   int Event;
 
-  float  Eabs;
-  float  Eact;
+  float  Eabs_3x3;
+  float  Eact_3x3;
+
+  float  Eabs_1x3;
+  float  Eact_1x3;
+
   int    nLayers;
 
   float Eact_CentralXtal;
