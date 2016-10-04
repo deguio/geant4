@@ -162,8 +162,11 @@ std::pair<float,float> MCTree::fitGausROOT(TH1F* histo)
 
   lego->SetFillColor(0);
 
-  std::cout<<"photostat:"<<addPhotostatistics(mean*1000)<<std::endl;
-  std::cout<<"tot:"<<sqrt(rms*rms/(mean*mean)+addPhotostatistics(mean*1000)*addPhotostatistics(mean*1000))*100<<std::endl;
+  //add photostatistic contribution
+  float poissonError=addPhotostatistics(mean*1000);
+
+  float   reso = sqrt(rms*rms/(mean*mean)+poissonError*poissonError)*100;
+  float   errorTotal = reso*0.05;//5% error on these estimations
 
   histo->Draw("EP");
   lego->Draw("same");
@@ -173,7 +176,8 @@ std::pair<float,float> MCTree::fitGausROOT(TH1F* histo)
   cans->SaveAs(name+".png");
   cans->SaveAs(name+".pdf");
 
-  return std::make_pair(rms/mean*100.,error*100);
+  //  return std::make_pair(rms/mean*100.,error*100);
+  return std::make_pair(reso,errorTotal);
 
 }
 
@@ -244,5 +248,7 @@ void MCTree::Loop(std::string setup, std::string energy)
    resolution [1] = reso_matrix.first;
    resolutionErr [1] = reso_matrix.second;
    
+   resolution.Write("resolution");
+   resolutionErr.Write("resolutionErr");
 
 }
