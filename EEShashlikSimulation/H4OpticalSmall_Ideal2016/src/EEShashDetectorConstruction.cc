@@ -510,7 +510,9 @@ void EEShashDetectorConstruction::DefineMaterials()
  // mptCeF->AddProperty ("RINDEX", PhotonEnergy_RI, refractiveIndex_CeF3, nEntries_RI)->SetSpline(true);
  //mptCeF->AddProperty ("ABSLENGTH", PhotonEnergy_ABS, Absorption, nEntries_ABS);
  
- mptCeF->AddConstProperty ("SCINTILLATIONYIELD", 1000./MeV);//this should be 1000./MeV 
+ // mptCeF->AddConstProperty ("SCINTILLATIONYIELD", 1000./MeV);//this should be 1000./MeV 
+ //test
+ mptCeF->AddConstProperty ("SCINTILLATIONYIELD", 6./MeV);//this should be 1000./MeV 
  mptCeF->AddConstProperty ("RESOLUTIONSCALE", 1);
  // mptCeF->AddConstProperty ("RESOLUTIONSCALE", 2.58);
  mptCeF->AddConstProperty ("FASTTIMECONSTANT", 32.5 *ns);
