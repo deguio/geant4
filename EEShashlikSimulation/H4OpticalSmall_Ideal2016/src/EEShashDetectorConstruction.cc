@@ -1216,7 +1216,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   int cathodeCopy = 0;
 
 
-  for( int ix=-1; ix<=1; ix+=2 ) {
+  for( int ix=-2; ix<=1; ix+=2 ) {
     for( int iy=-1; iy<=1; iy+=2 ) {
 
       if(fibreCopy<nFibres){
