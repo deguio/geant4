@@ -656,10 +656,10 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
 
   // world:
-  G4double worldSizeXY = 20. * (5.*calorSizeXY);
-  G4double worldSizeZ  = 100. * (fibreLength); 
-  // G4double worldSizeXY = 5 * (3.*calorSizeXY);
-  //  G4double worldSizeZ = 5. * (fibreLength); 
+  //  G4double worldSizeXY = 20. * (5.*calorSizeXY);
+  //  G4double worldSizeZ  = 100. * (fibreLength); 
+   G4double worldSizeXY = 5 * (3.*calorSizeXY);
+    G4double worldSizeZ = 5. * (fibreLength); 
   //  G4double worldSizeXY = 1.2 * (3.*calorSizeXY);
   //  G4double worldSizeZ = 2. * (fibreLength); 
   
@@ -1513,6 +1513,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   
 
+  /*
   
   //
   //Scintillators 3
@@ -1741,7 +1742,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   
 
-  
+  */
 
 
   //                                        
