@@ -148,9 +148,11 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   */
 
   // Smeared beam position (position xtal4apd) 3x3 mm window around centre (17 mm xtal + 1.5mm gap):
-  G4double xBeam = (G4UniformRand()*3-1.5)+(-18.5)*mm;
-  G4double yBeam = (G4UniformRand()*3-1.5)*mm;
+  //  G4double xBeam = (G4UniformRand()*3-1.5)+(-18.5)*mm;
+  //  G4double yBeam = (G4UniformRand()*3-1.5)+(18.5)*mm;
 
+  G4double xBeam = 0;
+  G4double yBeam = 0;
 
 
   // Position 0 <-- Confirmed correct, lower right corner viewed from front
