@@ -1,0 +1,4 @@
+#ifndef CHANNEL_INFO_H
+#define CHANNEL_INFO_H
+#include <vector>
+#endif
