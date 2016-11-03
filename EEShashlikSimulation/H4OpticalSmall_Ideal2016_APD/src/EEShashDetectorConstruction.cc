@@ -1222,7 +1222,10 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
       if(fibreCopy<nFibres){
 
       //sin and cos for the rotation
-      G4double xPos = ix*(calorSizeXY/2.-0.696);
+
+      G4double miniGap = 1.5*mm;
+
+      G4double xPos = ix*(calorSizeXY/2.-0.696)-(calorSizeXY/2.+1.5*miniGap);
       G4double yPos = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2) + xPos*xPos);
 
         G4cout << "    fibreCopy = " << fibreCopy << G4endl;
@@ -1517,6 +1520,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //
   //Scintillators 3
   //
+  /*
   G4VSolid* Scint3S
     = new G4Box( "Scintillator3",            // its name
 		 scint3SizeXY/2., scint3SizeXY/2., scint3Length/2.); //its size
@@ -1740,7 +1744,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                      fCheckOverlaps);  // checking overlaps 
 
   
-
+  */
   
 
 
