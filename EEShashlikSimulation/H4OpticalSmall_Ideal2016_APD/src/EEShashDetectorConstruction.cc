@@ -138,6 +138,11 @@ void EEShashDetectorConstruction::DefineMaterials()
   bialkali->AddElement(Cs,1);
   bialkali->AddElement(Sb,1);
 
+  //apd
+  G4Material* silicon = new G4Material("Silicon", density = 28.085*g/mole, ncomponents = 1);
+  silicon->AddElement(Si,1);
+
+
   //PMT Glass Window
   //density between 2.15 - 2.25 g/cm3
   //composition: 81% SiO2, 13% B2O3, (rest is other stuff)
@@ -581,7 +586,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   // fibres:
   // G4double fibreLength = 50.*mm;
-  G4double fibreLength = 420.*mm;
+  G4double fibreLength = calorThickness + 128.5*mm;
 
   // Weird plastic piece at beginning of shashlik, I shall name it PomPom
   G4double pompomSizeXY = calorSizeXY *mm;
@@ -598,6 +603,10 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //PMT Bialkali Cathode
   G4double cathodeThickness = 1.*mm;
   G4double cathodeRadius = 15. /2. *mm;
+
+  //APD
+  G4double APDThickness = 0.005*mm;
+  G4double APDRadius = 5.*mm;
 
 
   //BEAMTELESCOPE STUFF:
@@ -680,7 +689,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4Material* greaseMaterial = G4Material::GetMaterial("Grease");
   G4Material* PMTwindowMaterial = G4Material::GetMaterial("Boroslicate");
   G4Material* cathodeMaterial = G4Material::GetMaterial("Bialkali");
-
+  G4Material* apdMaterial = G4Material::GetMaterial("Silicon");
 
   
   if ( ! defaultMaterial || ! absMaterial || ! actMaterial ) {
@@ -1128,13 +1137,16 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //PMT Borosilicate Glass window
 
   G4VSolid* borosilS
-    = new G4Tubs("Borosil", 0, borosilRadius, borosilThickness/2., 0, twopi);  
+    = new G4Tubs("Borosil", 0, borosilRadius, borosilThickness/2., 0, twopi); 
 
   G4LogicalVolume* borosilLV
     = new G4LogicalVolume(
                  borosilS,     // its solid
                  PMTwindowMaterial,  // its material
                  "BorosilLV");   // its name
+
+
+
 
 
   //PMT Bialkali Cathode
@@ -1146,7 +1158,20 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  cathodeS,     // its solid
                  cathodeMaterial,  // its material
                  "CathodeLV");   // its name
-    
+
+
+//APD
+  G4VSolid* APDS
+    = new G4Box("APD",           // its name
+		APDRadius, APDRadius,APDThickness); // its size
+       
+
+  G4LogicalVolume* APDLV
+    = new G4LogicalVolume(
+			  APDS,     // its solid
+			  apdMaterial,  // its material
+			  "APDLV");   // its name
+
 
 
   // fibre:
@@ -1212,7 +1237,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // and now place the 4 fibres:
   int fibreCopy=0;
   int greaseCopy=0;
-  int borosilCopy=0;
+  int APDCopy=0;
   int cathodeCopy = 0;
 
 
@@ -1277,33 +1302,35 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 						       fCheckOverlaps);  // checking overlaps 
 
 
-      G4double yPosBoroSil = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.+ fibreLength/2.+greaseThickness +borosilThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2+ fibreLength/2.+greaseThickness +borosilThickness/2.) + xPos*xPos) ;
+      G4double yPosAPD = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.+ fibreLength/2.+greaseThickness +APDThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2+ fibreLength/2.+greaseThickness +APDThickness/2.) + xPos*xPos) ;
+
+      //place the apd
       new G4PVPlacement(
                      rotation,                // no rotation
-                     G4ThreeVector(xPos,yPosBoroSil,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2. + fibreLength/2.+greaseThickness +borosilThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696))    ), // its position
-                     borosilLV,            // its logical volume                         
-                     "BoroSil",            // its name
+                     G4ThreeVector(xPos,yPosAPD,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2. + fibreLength/2.+greaseThickness +APDThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696))    ), // its position
+                     APDLV,            // its logical volume                         
+                     "APD",            // its name
                      labLV,          // its mother  volume
                      false,            // no boolean operation
-                     borosilCopy,                // copy number
+                     APDCopy,                // copy number
                      fCheckOverlaps);  // checking overlaps 
 
 
     G4double yPosCathode = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.+ fibreLength/2.+greaseThickness+borosilThickness +cathodeThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2+ fibreLength/2.+greaseThickness+borosilThickness +cathodeThickness/2.) + xPos*xPos) ;
-      new G4PVPlacement(
-                     rotation,                // no rotation
-                     G4ThreeVector(xPos,yPosCathode,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2. + fibreLength/2.+greaseThickness +borosilThickness+cathodeThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696))    ), // its position
-                     cathodeLV,            // its logical volume                         
-                     "Cathode",            // its name
-                     labLV,          // its mother  volume
-                     false,            // no boolean operation
-                     cathodeCopy,                // copy number
-                     fCheckOverlaps);  // checking overlaps 
+//      new G4PVPlacement(
+//                     rotation,                // no rotation
+//                     G4ThreeVector(xPos,yPosCathode,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2. + fibreLength/2.+greaseThickness +borosilThickness+cathodeThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696))    ), // its position
+//                     cathodeLV,            // its logical volume                         
+//                     "Cathode",            // its name
+//                     labLV,          // its mother  volume
+//                     false,            // no boolean operation
+//                     cathodeCopy,                // copy number
+//                     fCheckOverlaps);  // checking overlaps 
       }
 
       fibreCopy++;
       greaseCopy++;
-      borosilCopy++;
+      APDCopy++;
       cathodeCopy++;
   
 
@@ -1806,7 +1833,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   G4VisAttributes* yellowBox= new G4VisAttributes(G4Colour(1.0,1.0,0.0));
   yellowBox->SetForceSolid(true);
-  borosilLV->SetVisAttributes(yellowBox);
+  APDLV->SetVisAttributes(yellowBox);
 
   G4VisAttributes* blackBox= new G4VisAttributes(G4Colour(0.0,0.0,0.0));
   blackBox->SetForceSolid(true);
