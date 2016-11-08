@@ -39,6 +39,9 @@ class CreateTree
   float  xPosition;
   float  yPosition;
   
+  std::vector<float> EAPD;
+  std::vector<float> Time_deposit_APD;
+  std::vector<float> E_deposit_APD;
 
-    
+  int nParticlesAPD;    
 };

@@ -35,7 +35,10 @@ CreateTree::CreateTree(TString name)
   this->GetTree()->Branch("yPosition",&this->yPosition,"yPosition/F");
 
 
+  this->GetTree()->Branch("EAPD",&this->EAPD);
+  this->GetTree()->Branch("Time_deposit_APD",&this->Time_deposit_APD);
 
+  this->GetTree()->Branch("nParticlesAPD",&this->nParticlesAPD,"nParticlesAPD/I");
 
 }
 
@@ -53,6 +56,7 @@ bool CreateTree::Write()
 
 void CreateTree::Clear()
 {
+
   Event = 0;
 
   Eabs_3x3=0;
@@ -70,4 +74,8 @@ void CreateTree::Clear()
   Eact_CentralXtal=0.;
   Eabs_CentralXtal=0.;
 
+  EAPD.clear();
+  Time_deposit_APD.clear();
+
+  nParticlesAPD=0;
 }

@@ -158,13 +158,14 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
       = G4SDManager::GetSDMpointer()->GetCollectionID("AbsHitsCollection3");
     fAct3HCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection3");
-
 //    fBgoHCID 
 //      = G4SDManager::GetSDMpointer()->GetCollectionID("BgoHitsCollection");
     fFibrHCIDCore 
       = G4SDManager::GetSDMpointer()->GetCollectionID("FibrHitsCollectionCore");
     fFibrHCIDClad 
       = G4SDManager::GetSDMpointer()->GetCollectionID("FibrHitsCollectionClad");
+    fAPDHCID
+      = G4SDManager::GetSDMpointer()->GetCollectionID("APDHitsCollection");
 
     /*    fScint1HCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("Scint1HitsCollection");
@@ -189,6 +190,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   EEShashCalorHitsCollection* bgoHC = GetHitsCollection(fBgoHCID, event);
   EEShashCalorHitsCollection* fibrHCCore = GetHitsCollection(fFibrHCIDCore, event);
   EEShashCalorHitsCollection* fibrHCClad = GetHitsCollection(fFibrHCIDClad, event);
+  EEShashCalorHitsCollection* APDHC = GetHitsCollection(fAPDHCID, event);
+
   // EEShashCalorHitsCollection* scint1HC = GetHitsCollection(fScint1HCID, event);
   // EEShashCalorHitsCollection* hodo11HC = GetHitsCollection(fHodo11HCID, event);
   //  EEShashCalorHitsCollection* hodo12HC = GetHitsCollection(fHodo12HCID, event);
@@ -209,7 +212,9 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   // EEShashCalorHit* scint1Hit = (*scint1HC)[scint1HC->entries()-1];
   // EEShashCalorHit* hodo11Hit = (*hodo11HC)[hodo11HC->entries()-1];
   // EEShashCalorHit* hodo12Hit = (*hodo12HC)[hodo11HC->entries()-1];
- 
+
+
+
   // Print per event (modulo n)
   //
   G4int eventID = event->GetEventID();
@@ -268,6 +273,11 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
 
   CreateTree::Instance() -> xPosition = xBeamPos;
   CreateTree::Instance() -> yPosition = yBeamPos;
+
+  for(int i=0;i<nFibres;++i){
+    EEShashCalorHit* APDHit = (*APDHC)[i]; 
+    CreateTree::Instance() -> EAPD.push_back(APDHit->GetEdep());
+  }
 
   CreateTree::Instance()->Fill(); 
   

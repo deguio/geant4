@@ -588,6 +588,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // G4double fibreLength = 50.*mm;
   G4double fibreLength = calorThickness + 128.5*mm;
 
+
   // Weird plastic piece at beginning of shashlik, I shall name it PomPom
   G4double pompomSizeXY = calorSizeXY *mm;
   G4double pompomLength = 8*mm;
@@ -605,7 +606,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4double cathodeRadius = 15. /2. *mm;
 
   //APD
-  G4double APDThickness = 0.005*mm;
+  G4double APDThickness = 0.200*mm;
   G4double APDRadius = 5.*mm;
 
 
@@ -2062,6 +2063,9 @@ void EEShashDetectorConstruction::ConstructSDandField()
     = new EEShashCalorimeterSD("FibrSDClad", "FibrHitsCollectionClad", 4,-1);
   SetSensitiveDetector("FibreCladLV",fibrSDClad);
 
+  EEShashCalorimeterSD* APDSD
+    = new EEShashCalorimeterSD("APDLV", "APDHitsCollection", 4,-1);
+  SetSensitiveDetector("APDLV",APDSD);
 
   /*
   // and  POMMMELS:
